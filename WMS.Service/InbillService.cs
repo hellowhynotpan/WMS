@@ -16,13 +16,13 @@ using WMS.Model;
 
 namespace WMS.Service
 {
-    public class BaseWareHouseService : BaseService<BaseWareHouse>, IBaseWareHouseService
+   public class InbillService : BaseService<Inbill>, IInbillService
     {
-        private readonly IBaseWareHouseRepository _iBaseWareHouseRepository;
-        public BaseWareHouseService(IBaseWareHouseRepository iBaseWareHouseRepository)
+        private readonly IInbillRepository _iInbillRepository;
+        public InbillService(IInbillRepository iInbillRepository)
         {
-            base._iBaseRepository = iBaseWareHouseRepository;
-            _iBaseWareHouseRepository = iBaseWareHouseRepository;
+            base._iBaseRepository = iInbillRepository;
+            _iInbillRepository = iInbillRepository;
         }
     }
 }

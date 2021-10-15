@@ -10,10 +10,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WMS.IRepository;
+using WMS.IService;
+using WMS.Model;
 
 namespace WMS.Service
 {
-    class BasePartService
+     public  class BasePartService : BaseService<BasePart>, IBasePartService
     {
+        private readonly IBasePartRepository _iBasePartRepository;
+        public BasePartService(IBasePartRepository iBasePartRepository)
+        {
+            base._iBaseRepository = iBasePartRepository;
+            _iBasePartRepository = iBasePartRepository;
+        }
     }
 }

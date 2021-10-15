@@ -10,10 +10,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WMS.IRepository;
+using WMS.IService;
+using WMS.Model;
 
 namespace WMS.Service
 {
-    class InbillDService
+    public class InbillDService : BaseService<InbillD>, IInbillDService
     {
+        private readonly IInbillDRepository _iInbillDRepository;
+        public InbillDService(IInbillDRepository iInbillDRepository)
+        {
+            base._iBaseRepository = iInbillDRepository;
+            _iInbillDRepository = iInbillDRepository;
+        }
     }
 }

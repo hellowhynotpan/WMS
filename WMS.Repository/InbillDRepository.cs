@@ -15,7 +15,7 @@ using WMS.Model;
 
 namespace WMS.Repository
 {
-    public class SysUserLogOnRespository : BaseRepository<SysUserLogOn>, ISysUserLogOnRepository
+    public class InbillDRepository : BaseRepository<InbillD>, IInbillDRepository
     {
     }
 }

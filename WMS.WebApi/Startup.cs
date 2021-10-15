@@ -109,6 +109,30 @@ namespace WSM.WebApi
             //作用域 （Scoped）在每次请求中只创建一次。
             services.AddScoped<ISysUserRepository, SysUserRepository>();
             services.AddScoped<ISysUserService, SysUserService>();
+
+            services.AddScoped<ISysUserLogOnRepository, SysUserLogOnRepository>();
+            services.AddScoped<ISysUserLogOnService, SysUserLogOnService>();
+
+            services.AddScoped<IStockMRepository, StockMRepository>();
+            services.AddScoped<IStockMService, StockMService>();
+
+            services.AddScoped<IStockMRepository, StockMRepository>();
+            services.AddScoped<IStockMService, StockMService>();
+
+            services.AddScoped<IStockDRepository, StockDRepository>();
+            services.AddScoped<IStockDService, StockDService>();
+
+            services.AddScoped<IInbillRepository, InbillRepository>();
+            services.AddScoped<IInbillService, InbillService>();
+
+            services.AddScoped<IBaseWareHouseRepository, BaseWareHouseRepository>();
+            services.AddScoped<IBaseWareHouseService, BaseWareHouseService>();
+
+            services.AddScoped<IBasePartRepository, BasePartRepository>();
+            services.AddScoped<IBasePartService, BasePartService >();
+          
+            services.AddScoped<IBaseCargospaceRepository, BaseCargospaceRepository>();
+            services.AddScoped<IBaseCargospaceService, BaseCargospaceService>();
             return services;
         }
         public static IServiceCollection AddCustomJWT(this IServiceCollection services)

@@ -10,10 +10,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WMS.IRepository;
+using WMS.IService;
+using WMS.Model;
 
 namespace WMS.Service
 {
-    class StockMService
+    public class StockMService : BaseService<StockM>, IStockMService
     {
+        private readonly IStockMRepository _iStockMRepository;
+        public StockMService(IStockMRepository iStockMRepository)
+        {
+            base._iBaseRepository = iStockMRepository;
+            _iStockMRepository = iStockMRepository;
+        }
     }
 }

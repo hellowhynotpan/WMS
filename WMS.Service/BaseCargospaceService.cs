@@ -10,10 +10,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WMS.IRepository;
+using WMS.IService;
+using WMS.Model;
 
 namespace WMS.Service
 {
-    class BaseCargospaceService
+    public class BaseCargospaceService : BaseService<BaseCargospace>, IBaseCargospaceService
     {
+        private readonly IBaseCargospaceRepository _iBaseCargospaceRepository;
+        public BaseCargospaceService(IBaseCargospaceRepository iBaseCargospaceRepository)
+        {
+            base._iBaseRepository = iBaseCargospaceRepository;
+            _iBaseCargospaceRepository = iBaseCargospaceRepository;
+        }
     }
 }
