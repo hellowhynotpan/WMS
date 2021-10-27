@@ -19,6 +19,8 @@ using WMS.IRepository;
 using WMS.IService;
 using WMS.Repository;
 using WMS.Service;
+using WMS.WebApi.Common;
+using static WMS.WebApi.Common.AppSettingHelper;
 
 namespace WSM.WebApi
 {
@@ -73,8 +75,12 @@ namespace WSM.WebApi
                 IsAutoCloseConnection = true
             });
             //ioc依赖注入
+            services.AddAutoMapper(typeof(CustomAutoMapperProfile));
             services.AddCustomJWT();
             services.AddCustom();
+            services.AddCustomCorsPolicy();
+            services.AddMemoryCache();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -83,11 +89,11 @@ namespace WSM.WebApi
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WSM.WebApi v1"));
             }
-
-            app.UseHttpsRedirection();
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WSM.WebApi v1"));
+            app.UseCors("CustomCorsPolicy");
+            /* app.UseHttpsRedirection();*/
 
             app.UseRouting();
             //用户认证中间件  一定要在UseAuthorization前面
@@ -129,10 +135,12 @@ namespace WSM.WebApi
             services.AddScoped<IBaseWareHouseService, BaseWareHouseService>();
 
             services.AddScoped<IBasePartRepository, BasePartRepository>();
-            services.AddScoped<IBasePartService, BasePartService >();
-          
+            services.AddScoped<IBasePartService, BasePartService>();
+
             services.AddScoped<IBaseCargospaceRepository, BaseCargospaceRepository>();
             services.AddScoped<IBaseCargospaceService, BaseCargospaceService>();
+
+            services.AddScoped<IBaiDuFaceMService, BaiDuFaceMService>();
             return services;
         }
         public static IServiceCollection AddCustomJWT(this IServiceCollection services)
@@ -150,6 +158,20 @@ namespace WSM.WebApi
                         ValidAudience = "http://localhost:5000",
                     };
                 });
+            return services;
+        }
+        public static IServiceCollection AddCustomCorsPolicy(this IServiceCollection services)
+        {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CustomCorsPolicy", policy =>
+                {
+                    policy.WithOrigins("http://localhost:8080")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+                });
+            });
             return services;
         }
     }

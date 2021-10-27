@@ -21,6 +21,7 @@ namespace WMS.Model
     [SugarTable("sys_user")]
     public class SysUser
     {
+       
         [SugarColumn(ColumnName = "id", IsPrimaryKey = true, ColumnDataType = "varchar(50)", ColumnDescription = "主键")]//数据库是自增才配自增 
         public string Id { get; set; }
         /// <summary>
@@ -50,7 +51,7 @@ namespace WMS.Model
         /// <summary>
         /// 性别
         /// </summary>
-        [SugarColumn(ColumnName = "gender", ColumnDataType = "varchar(50)", ColumnDescription = "性别", IsNullable = false)]
+        [SugarColumn(ColumnName = "gender", ColumnDataType = "bool", ColumnDescription = "性别", IsNullable = false)]
         public bool Gender { get; set; }
 
         /// <summary>
@@ -62,8 +63,8 @@ namespace WMS.Model
         /// <summary>
         /// 手机
         /// </summary>
-        [SugarColumn(ColumnName = "mobile_phone",  ColumnDescription = "生日", IsNullable = true)]
-        public DateTime MobilePhone { get; set; }
+        [SugarColumn(ColumnName = "mobile_phone", ColumnDataType = "varchar(30)", ColumnDescription = "生日", IsNullable = true)]
+        public string MobilePhone { get; set; }
 
         /// <summary>
         /// 邮箱
@@ -104,55 +105,55 @@ namespace WMS.Model
         /// <summary>
         /// 是否管理员
         /// </summary>
-        [SugarColumn(ColumnName = "is_administrator",  ColumnDescription = "是否管理员", IsNullable = false)]
+        [SugarColumn(ColumnName = "is_administrator", ColumnDataType = "bool", ColumnDescription = "是否管理员", IsNullable = false)]
         public bool IsAdministrator { get; set; }
 
         /// <summary>
         /// 删除标志
         /// </summary>
-        [SugarColumn(ColumnName = "delete_mark", ColumnDescription = "删除标志", IsNullable = false)]
-        public bool DeleteMark { get; set; }
+        [SugarColumn(ColumnName = "delete_mark", ColumnDataType = "bool", ColumnDescription = "0未删除 1: 已删除", IsNullable = false)]
+        public bool DeleteMark { get; set; } =false;
 
         /// <summary>
         /// 删除时间
         /// </summary>
         [SugarColumn(ColumnName = "delete_time", ColumnDescription = "删除时间", IsNullable = true)]
-        public bool DeleteTime { get; set; }
+        public DateTime DeleteTime { get; set; } 
 
         /// <summary>
         /// 删除用户Id
         /// </summary>
         [SugarColumn(ColumnName = "delete_user_id",ColumnDescription = "删除用户 Id", IsNullable = true)]
-        public bool DeleteUserId { get; set; }
+        public string DeleteUserId { get; set; }
 
         /// <summary>
         /// 有效标志
         /// </summary>
-        [SugarColumn(ColumnName = "enabled_mark", ColumnDescription = "有效标志  0: 有效 1: 无效", IsNullable = false)]
-        public bool EnabledMark { get; set; }
+        [SugarColumn(ColumnName = "enabled_mark", ColumnDataType = "bool", ColumnDescription = "有效标志  0: 有效 1: 无效", IsNullable = false)]
+        public bool EnabledMark { get; set; }=true;
 
         /// <summary>
         /// 用户描述
         /// </summary>
         [SugarColumn(ColumnName = "description", ColumnDescription = "用户描述", ColumnDataType = "varchar(500)", IsNullable = true)]
         public string Description { get; set; }
-        
+
         /// <summary>
         /// 创建时间
         /// </summary>
-        [SugarColumn(ColumnName = "create_time", ColumnDescription = "创建时间",  IsNullable = false)]
-        public DateTime CreateTime { get; set; }
+        [SugarColumn(ColumnName = "create_time", ColumnDescription = "创建时间", IsNullable = false)]
+        public DateTime CreateTime { get; set; } = DateTime.Now;
 
         /// <summary>
         /// 创建用户
         /// </summary>
-        [SugarColumn(ColumnName = "create_owner", ColumnDescription = "创建用户", ColumnDataType = "varchar(500)", IsNullable = false)]
+        [SugarColumn(ColumnName = "create_owner", ColumnDescription = "创建用户", ColumnDataType = "varchar(500)", IsNullable = true)]
         public string CreateOwner { get; set; }
 
         /// <summary>
         /// 最后修改时间
         /// </summary>
-        [SugarColumn(ColumnName = "last_upd_time", ColumnDescription = "最后修改时间", IsNullable = true)]
+        [SugarColumn(ColumnName = "last_upd_time", ColumnDescription = "最后修改时间", IsNullable = false)]
         public DateTime LastUpdTIME { get; set; }
 
         /// <summary>

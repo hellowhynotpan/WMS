@@ -27,7 +27,7 @@ namespace WMS.IRepository
         /// </summary>
         /// <param name="entity">实体对象</param>
         /// <returns>受影响行数</returns>
-        Task<int> CreateAsync(TEntity entity);
+        Task<TEntity> CreateAsync(TEntity entity);
 
         /// <summary>
         /// 批量新增
@@ -92,6 +92,13 @@ namespace WMS.IRepository
         /// <param name="id">id</param>
         /// <returns>实体对象</returns>
         Task<TEntity> FindAsync(string id);
+
+        /// <summary>
+        /// 根据表达式查询单笔
+        /// </summary>
+        /// <param name="func">表达式</param>
+        /// <returns>实体对象</returns>
+        Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> func);
 
 
         /// <summary>

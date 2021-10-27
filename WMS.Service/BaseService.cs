@@ -22,7 +22,7 @@ namespace WMS.Service
         //从子类的构造函数中传入
         protected IBaseRepository<TEntity> _iBaseRepository;
 
-        public async Task<int> CreateAsync(TEntity entity)
+        public async Task<TEntity> CreateAsync(TEntity entity)
         {
             return await _iBaseRepository.CreateAsync(entity);
         }
@@ -60,6 +60,11 @@ namespace WMS.Service
         public async Task<TEntity> FindAsync(string id)
         {
             return await _iBaseRepository.FindAsync(id);
+        }
+
+        public async Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> func)
+        {
+            return await _iBaseRepository.FindAsync(func);
         }
 
         public async Task<int> InsertListAsync(List<TEntity> entities)

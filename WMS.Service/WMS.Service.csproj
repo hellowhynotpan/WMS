@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Baidu.AI" Version="3.6.14" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\WMS.IRepository\WMS.IRepository.csproj" />
     <ProjectReference Include="..\WMS.IService\WMS.IService.csproj" />
   </ItemGroup>

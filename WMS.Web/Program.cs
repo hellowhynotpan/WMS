@@ -20,7 +20,7 @@ namespace WSM.WebApi
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder.UseStartup<Startup>().UseUrls("http://192.168.0.136:8000;https://192.168.0.136:8001");
                 });
     }
 }

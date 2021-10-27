@@ -29,15 +29,24 @@ namespace WMS.Repository
                 //Console.WriteLine(string.Join(",", pars?.Select(it => it.ParameterName + ":" + it.Value)));
             };
             //数据库
-            base.Context.DbMaintenance.CreateDatabase();
+            /*base.Context.DbMaintenance.CreateDatabase();*/
             //初始化数据表
-            base.Context.CodeFirst.InitTables(
-                typeof(SysUser));
+            /*base.Context.CodeFirst.InitTables(
+                *//*typeof(SysUser),
+                typeof(SysUserLogOn)*//*
+                typeof(StockM),
+                typeof(StockD),
+                typeof(Inbill),
+                typeof(InbillD),
+                typeof(BaseWareHouse),
+                typeof(BasePart),
+                typeof(BaseCargospace)*//*
+                );*/
         }
 
-        public async Task<int> CreateAsync(TEntity entity)
+        public async Task<TEntity> CreateAsync(TEntity entity)
         {
-            return await Context.Insertable(entity).ExecuteCommandAsync();
+            return await Context.Insertable(entity).ExecuteReturnEntityAsync();
         }
 
         public async Task<int> InsertListAsync(List<TEntity> entities)
@@ -123,6 +132,11 @@ namespace WMS.Repository
               .Where(func)
               .OrderBy(sortDesc, OrderByType.Desc)
               .ToPageListAsync(page, size, total);
+        }
+
+        public async Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> func)
+        {
+            return await Context.Queryable<TEntity>().Where(func).FirstAsync();
         }
     }
 }

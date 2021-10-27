@@ -35,7 +35,7 @@ namespace WMS.Model
         /// <summary>
         /// 密码
         /// </summary>
-        [SugarColumn(ColumnName = "password", ColumnDataType = "varchar(50)", ColumnDescription = "密码属性", IsNullable = false)]
+        [SugarColumn(ColumnName = "password", ColumnDataType = "varchar(50)", ColumnDescription = "密码", IsNullable = false)]
         public string Password { get; set; }
 
         /// <summary>
@@ -71,14 +71,14 @@ namespace WMS.Model
         /// <summary>
         ///最后修改密码日期
         /// </summary>
-        [SugarColumn(ColumnName = "change_password_date", ColumnDescription = "最后修改密码日期", IsNullable = true)]
+        [SugarColumn(ColumnName = "change_password_date",  ColumnDescription = "最后修改密码日期", IsNullable = true)]
         public DateTime ChangePasswordDate { get; set; }
 
         /// <summary>
         ///允许同时有多用户登录
         /// </summary>
-        [SugarColumn(ColumnName = "multi_user_login", ColumnDescription = "最后修改密码日期", IsNullable = false)]
-        public bool MultiUserLogin { get; set; }
+        [SugarColumn(ColumnName = "multi_user_login", ColumnDataType = "bool", ColumnDescription = "最后修改密码日期", IsNullable = false)]
+        public bool MultiUserLogin { get; set; } = true;
 
         /// <summary>
         ///登录次数
@@ -89,7 +89,7 @@ namespace WMS.Model
         /// <summary>
         ///在线状态
         /// </summary>
-        [SugarColumn(ColumnName = "user_on_line", ColumnDescription = "在线状态", IsNullable = true)]
+        [SugarColumn(ColumnName = "user_on_line", ColumnDataType = "bool", ColumnDescription = "在线状态", IsNullable = true)]
         public bool UserOnLine { get; set; }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace WMS.Model
         /// <summary>
         ///密码提示答案
         /// </summary>
-        [SugarColumn(ColumnName = "question", ColumnDataType = "varchar(100)", ColumnDescription = "密码提示答案", IsNullable = true)]
+        [SugarColumn(ColumnName = "answer_question", ColumnDataType = "varchar(100)", ColumnDescription = "密码提示答案", IsNullable = true)]
         public string AnswerQuestion { get; set; }
 
         /// <summary>
