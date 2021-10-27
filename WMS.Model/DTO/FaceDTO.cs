@@ -36,9 +36,9 @@ namespace WMS.Model.DTO
         public string GroupId { get; set; }
 
         /// <summary>
-        /// faceToken
+        /// user_Id
         /// </summary>
-        public string FaceToken { get; set; }
+        public int UserId { get; set; }
 
     }
 }

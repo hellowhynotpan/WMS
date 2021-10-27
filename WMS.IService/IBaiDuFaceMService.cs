@@ -19,15 +19,22 @@ namespace WMS.IService
         /// <summary>
         /// 人脸注册
         /// </summary>
-        /// <param name="face"></param>
-        /// <returns></returns>
-        public bool AddFace(FaceDTO face);
+        /// <param name="face">人脸信息</param>
+        /// <returns>faceToken</returns>
+        public string AddFace(FaceDTO face);
 
         /// <summary>
         /// 人脸搜索
         /// </summary>
-        /// <param name="face"></param>
-        /// <returns></returns>
-        public bool SearchFace(FaceDTO face);
+        /// <param name="face">人脸信息</param>
+        /// <returns>userId</returns>
+        public int SearchFace(FaceDTO face);
+
+        /// <summary>
+        /// 人脸更新
+        /// </summary>
+        /// <param name="face">人脸信息</param>
+        /// <returns>faceToken</returns>
+        public string UpdFace(FaceDTO face);
     }
 }

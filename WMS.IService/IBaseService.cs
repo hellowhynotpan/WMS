@@ -77,7 +77,7 @@ namespace WMS.IService
         /// </summary>
         /// <param name="id">id</param>
         /// <returns>实体对象</returns>
-        Task<TEntity> FindAsync(string id);
+        Task<TEntity> FindAsync(int id);
 
         /// <summary>
         /// 根据表达式查询单笔

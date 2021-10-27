@@ -22,8 +22,8 @@ namespace WMS.Model
     public class SysUser
     {
        
-        [SugarColumn(ColumnName = "id", IsPrimaryKey = true, ColumnDataType = "varchar(50)", ColumnDescription = "主键")]//数据库是自增才配自增 
-        public string Id { get; set; }
+        [SugarColumn(ColumnName = "id", IsIdentity = true, IsPrimaryKey = true,  ColumnDescription = "主键")]//数据库是自增才配自增 
+        public int Id { get; set; }
         /// <summary>
         /// 账号
         /// </summary>

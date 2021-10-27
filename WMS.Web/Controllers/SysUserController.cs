@@ -10,6 +10,7 @@ using WMS.Model;
 using SqlSugar;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
+using WMS.Model.DTO;
 
 namespace WMS.WebApi.Controllers
 {
@@ -20,11 +21,14 @@ namespace WMS.WebApi.Controllers
     {
         private readonly ISysUserService _iSysUserService;
         private readonly ISysUserLogOnService _iSysUserLogOnService;
-        public SysUserController(ISysUserService iSysUserService, ISysUserLogOnService iSysUserLogOnService)
+        private readonly IBaiDuFaceMService _iBaiduFaceMService;
+        public SysUserController(ISysUserService iSysUserService, ISysUserLogOnService iSysUserLogOnService, IBaiDuFaceMService iBaiDuFaceMService)
         {
             _iSysUserService = iSysUserService;
             _iSysUserLogOnService = iSysUserLogOnService;
+            _iBaiduFaceMService = iBaiDuFaceMService;
         }
+    
 
         [HttpGet("GetAll")]
         public async Task<ApiResult> GetUser()
@@ -34,7 +38,7 @@ namespace WMS.WebApi.Controllers
         }
 
         [HttpGet("FindById")]
-        public async Task<ApiResult> QueryUserById([FromQuery] string Id)
+        public async Task<ApiResult> QueryUserById([FromQuery] int Id)
         {
             var data = await _iSysUserService.FindAsync(Id);
             if (data == null) return ApiResultHelper.Error("");
@@ -50,16 +54,13 @@ namespace WMS.WebApi.Controllers
         }
 
         [HttpPost("Create")]
-        public async Task<ApiResult> CreateUser( [FromBody]SysUser sysUser)
+        public async Task<ApiResult> CreateUser([FromBody]SysUser sysUser)
         {
-            sysUser.Id = System.Guid.NewGuid().ToString();
             var data = await _iSysUserService.CreateAsync(sysUser);
             if (data ==null) return ApiResultHelper.Error("新增失败");
-
             SysUserLogOn sysUserLogOn = new SysUserLogOn();
             sysUserLogOn.Password= MD5Helper.MD5Encrypt32("123456");
             sysUserLogOn.UserId = data.Id;
-            sysUserLogOn.Id = System.Guid.NewGuid().ToString();
             sysUserLogOn.FirstVisitTime = DateTime.Now;
             var data2 = await _iSysUserLogOnService.CreateAsync(sysUserLogOn);
             if (data2 == null) return ApiResultHelper.Error("新增失败");
@@ -73,6 +74,27 @@ namespace WMS.WebApi.Controllers
             RefAsync<int> total = 0;
             var data = await _iSysUserService.QueryAsync(page, size,total);
             return ApiResultHelper.Success(data, total);
+        }
+
+        [HttpPost("AddUserFace")]
+        public async Task<ApiResult> AddUserFace([FromBody]FaceDTO face)
+        {
+            var _user = await _iSysUserService.FindAsync(face.UserId);
+            if (_user == null) return ApiResultHelper.Error("人脸注册/更新失败,账号不存在");
+            string faceToken;
+            if (_user.FaceId != null)
+            {
+                faceToken=_iBaiduFaceMService.UpdFace(face);
+            }
+            else
+            {
+                faceToken = _iBaiduFaceMService.AddFace(face);
+            }
+            if (string.IsNullOrEmpty(faceToken)) return ApiResultHelper.Success("人脸注册/更新失败");
+            _user.FaceId = faceToken;
+            var b =await  _iSysUserService.EditAsync(_user);
+            if(b!=1) return ApiResultHelper.Error("人脸注册/更新失败");
+            return ApiResultHelper.Success("人脸注册/更新成功");
         }
     }
 }

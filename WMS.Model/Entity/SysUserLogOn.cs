@@ -23,14 +23,14 @@ namespace WMS.Model
         /// <summary>
         /// Id
         /// </summary>
-        [SugarColumn(ColumnName = "id", IsPrimaryKey = true, ColumnDataType = "varchar(50)", ColumnDescription = "主键")]//数据库是自增才配自增 
-        public string Id { get; set; }
+        [SugarColumn(ColumnName = "id", IsIdentity = true, IsPrimaryKey = true,  ColumnDescription = "主键")]//数据库是自增才配自增 
+        public int Id { get; set; }
 
         /// <summary>
         /// 用户主表主键
         /// </summary>
-        [SugarColumn(ColumnName = "user_id", ColumnDataType = "varchar(50)", ColumnDescription = "账号", IsNullable = false)]
-        public string UserId { get; set; }
+        [SugarColumn(ColumnName = "user_id", ColumnDescription = "账号", IsNullable = false)]
+        public int UserId { get; set; }
 
         /// <summary>
         /// 密码

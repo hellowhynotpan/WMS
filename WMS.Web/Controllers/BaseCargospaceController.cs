@@ -33,7 +33,7 @@ namespace WMS.WebApi.Controllers
         }
 
         [HttpGet("FindById")]
-        public async Task<ApiResult> QueryUserById([FromQuery] string id)
+        public async Task<ApiResult> QueryUserById([FromQuery] int id)
         {
             var data = await _iBaseCargospaceService.FindAsync(id);
             if (data == null) return ApiResultHelper.Error("查询失败");

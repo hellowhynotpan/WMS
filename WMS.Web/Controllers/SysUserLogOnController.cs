@@ -33,7 +33,7 @@ namespace WMS.WebApi.Controllers
         }
 
         [HttpGet("FindById")]
-        public async Task<ApiResult> QueryUserById([FromQuery] string Id)
+        public async Task<ApiResult> QueryUserById([FromQuery] int Id)
         {
             var data = await _iSysUserLogOnService.FindAsync(Id);
             if (data == null) return ApiResultHelper.Error("");
@@ -63,6 +63,14 @@ namespace WMS.WebApi.Controllers
             RefAsync<int> total = 0;
             var data = await _iSysUserLogOnService.QueryAsync(page, size, total);
             return ApiResultHelper.Success(data, total);
+        }
+
+        [HttpPost("CheckPwd")]
+        public async Task<ApiResult> CheckPwd([FromBody]SysUserLogOn sysUserLogOn)
+        {
+            var _user = await _iSysUserLogOnService.FindAsync(x => x.UserId == sysUserLogOn.UserId&& x.Password == MD5Helper.MD5Encrypt32(sysUserLogOn.Password));
+            if(_user==null) return ApiResultHelper.Error("密码不正确");
+            return ApiResultHelper.Success("_user");
         }
     }
 }

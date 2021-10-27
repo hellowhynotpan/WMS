@@ -22,7 +22,7 @@ namespace WMS.Model
         // <summary>
         /// 主键
         /// </summary>
-        [SugarColumn(ColumnName = "id", IsPrimaryKey = true, ColumnDataType = "varchar(50)", ColumnDescription = "主键")]//数据库是自增才配自增 
+        [SugarColumn(ColumnName = "id", IsIdentity = true, IsPrimaryKey = true, ColumnDataType = "varchar(50)", ColumnDescription = "主键")]//数据库是自增才配自增 
         public string Id { get; set; }
 
 

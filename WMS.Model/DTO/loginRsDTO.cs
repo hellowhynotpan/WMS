@@ -26,7 +26,7 @@ namespace WMS.Model.DTO
         /// <summary>
         /// 用户ID
         /// </summary>
-        public string Id { get; set; }
+        public int Id { get; set; }
 
         /// <summary>
         /// 昵称
@@ -37,5 +37,10 @@ namespace WMS.Model.DTO
         /// 头像
         /// </summary>
         public string HeadIcon { get; set; }
+
+        /// <summary>
+        /// 真实姓名
+        /// </summary>
+        public string RealName { get; set; }
     }
 }

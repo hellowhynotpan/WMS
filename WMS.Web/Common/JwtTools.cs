@@ -16,7 +16,7 @@ namespace WMS.WebApi.Common
         {
             var claims = new Claim[]{
                     new Claim(ClaimTypes.Name,user.Account),
-                    new Claim("id",user.Id)
+                    new Claim("id",user.Id.ToString())
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SDCD-DSADA-FSA-GFDAG-GDMDEAI-VF"));
             var token = new JwtSecurityToken(

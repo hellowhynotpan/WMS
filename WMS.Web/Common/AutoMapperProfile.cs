@@ -19,6 +19,7 @@ namespace WMS.WebApi.Common
                 .ForMember(c =>c.CreateTime , opt => opt.Ignore());
             CreateMap<UserDTO, SysUser>()
                 .ForMember(c => c.Id, opt => opt.Ignore());
+            CreateMap<SysUser, LoginRsDTO>();
         }
     }
 }
