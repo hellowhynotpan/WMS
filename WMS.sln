@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WMS.Service", "WMS.Service\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WMS.WebApi", "WMS.Web\WMS.WebApi.csproj", "{A9E6A07E-B5C8-4442-981E-886241737122}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils", "Utils\Utils.csproj", "{0056839C-819F-4CD2-AFFD-35E5BDEE371D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{A9E6A07E-B5C8-4442-981E-886241737122}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A9E6A07E-B5C8-4442-981E-886241737122}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A9E6A07E-B5C8-4442-981E-886241737122}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0056839C-819F-4CD2-AFFD-35E5BDEE371D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0056839C-819F-4CD2-AFFD-35E5BDEE371D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0056839C-819F-4CD2-AFFD-35E5BDEE371D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0056839C-819F-4CD2-AFFD-35E5BDEE371D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

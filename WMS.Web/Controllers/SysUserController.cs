@@ -84,10 +84,12 @@ namespace WMS.WebApi.Controllers
             string faceToken;
             if (_user.FaceId != null)
             {
+                //存在人脸信息则更新
                 faceToken=_iBaiduFaceMService.UpdFace(face);
             }
             else
             {
+                //不存在人脸信息则新增
                 faceToken = _iBaiduFaceMService.AddFace(face);
             }
             if (string.IsNullOrEmpty(faceToken)) return ApiResultHelper.Success("人脸注册/更新失败");

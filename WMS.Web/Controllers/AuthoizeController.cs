@@ -34,14 +34,14 @@ namespace WMS.WebApi.Controllers
         [HttpPost("LoginByPwd")]
         public async Task<ApiResult> LoginByPwd([FromServices] IMapper iMapper, [FromBody] UserDTO loginDto)
         {
-            var _user = await _iSysUserService.FindAsync(x =>x.Account== loginDto.Account || x.Email==loginDto.Account||x.MobilePhone== loginDto.Account);
+            var _user = await _iSysUserService.FindAsync(x => x.Account == loginDto.Account || x.Email == loginDto.Account || x.MobilePhone == loginDto.Account);
             if (_user == null) return ApiResultHelper.Error("账号不存在");
             if (_user.EnabledMark == false) return ApiResultHelper.Error("账号已注销,请联系管理员");
-            var userLogOn = await _iSysUserLogOnService.FindAsync(x=>x.UserId==_user.Id);
+            var userLogOn = await _iSysUserLogOnService.FindAsync(x => x.UserId == _user.Id);
             string pwd = MD5Helper.MD5Encrypt32(loginDto.Password);
             if (userLogOn.Password != pwd) return ApiResultHelper.Error("账号或密码不正确");
             var data = iMapper.Map<LoginRsDTO>(_user);
-            data.Token= JwtTools.GetToken(_user);
+            data.Token = JwtTools.GetToken(_user);
             return ApiResultHelper.Success(data);
         }
 
@@ -84,7 +84,7 @@ namespace WMS.WebApi.Controllers
         }
 
         [HttpGet("SendSmsByLogin")]
-        public async Task<ApiResult> SendSmsByLogin([FromQuery]string mobilePhone)
+        public async Task<ApiResult> SendSmsByLogin([FromQuery] string mobilePhone)
         {
             var _user = await _iSysUserService.FindAsync(x => x.MobilePhone == mobilePhone);
             if (_user == null) return ApiResultHelper.Error("该手机号未注册");
@@ -94,18 +94,18 @@ namespace WMS.WebApi.Controllers
                 var offsetSecionds = (DateTime.Now - cachedMsgCaptcha.CreateTime).Seconds;
                 if (offsetSecionds < 60)
                 {
-                    return  ApiResultHelper.Error("短信验证码获取太频繁，请稍后重试");
+                    return ApiResultHelper.Error("短信验证码获取太频繁，请稍后重试");
                 }
             }
             UserDTO loginDto = new UserDTO();
-            loginDto.SmsCode= ALiSMSHelper.CreateRandomNumber(6);
+            loginDto.SmsCode = ALiSMSHelper.CreateRandomNumber(6);
             loginDto.CreateTime = DateTime.Now;
             loginDto.ValidateCount = 0;
             loginDto.MobilePhone = mobilePhone;
             _cache.Set(loginDto.MobilePhone, loginDto, TimeSpan.FromMinutes(2));
             //调用第三方SDK实际发送短信
             //.....
-            return ApiResultHelper.Success("发送成功"+ loginDto.SmsCode);
+            return ApiResultHelper.Success("发送成功" + loginDto.SmsCode);
         }
 
 
@@ -142,7 +142,7 @@ namespace WMS.WebApi.Controllers
             _user = await _iSysUserService.FindAsync(x => x.Account == registerDto.Account);
             if (_user != null) return ApiResultHelper.Error("该用户名已注册");
             var cachedMsgCaptcha = _cache.Get<UserDTO>(registerDto.MobilePhone);
-            if (cachedMsgCaptcha == null|| cachedMsgCaptcha.ValidateCount >= 3)
+            if (cachedMsgCaptcha == null || cachedMsgCaptcha.ValidateCount >= 3)
             {
                 _cache.Remove(registerDto.MobilePhone);
                 return ApiResultHelper.Error("短信验证码无效，请重新获取");
@@ -167,6 +167,12 @@ namespace WMS.WebApi.Controllers
             var loginRs = iMapper.Map<LoginRsDTO>(data);
             loginRs.Token = JwtTools.GetToken(data);
             return ApiResultHelper.Success(loginRs);
+        }
+
+        [HttpGet("Test")]
+        public async Task<ApiResult> Test()
+        {
+
         }
     }
 }
