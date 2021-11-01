@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Utils\Utils.csproj" />
     <ProjectReference Include="..\WMS.IRepository\WMS.IRepository.csproj" />
     <ProjectReference Include="..\WMS.IService\WMS.IService.csproj" />
     <ProjectReference Include="..\WMS.Model\WMS.Model.csproj" />
