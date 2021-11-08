@@ -25,5 +25,16 @@ namespace WMS.Service
             base._iBaseRepository = iSysUserRepository;
             _iSysUserRepository = iSysUserRepository;
         }
+
+        /// <summary>
+        /// 注册
+        /// </summary>
+        /// <param name="user">账号</param>
+        /// <param name="sysUserLog">登录</param>
+        /// <returns></returns>
+        public async Task<bool> Register(SysUser user,SysUserLogOn sysUserLog )
+        {
+            return await _iSysUserRepository.Register(user, sysUserLog);
+        }
     }
 }

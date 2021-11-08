@@ -26,7 +26,7 @@ namespace WMS.Model.DTO
         /// <summary>
         /// 用户ID
         /// </summary>
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// 昵称

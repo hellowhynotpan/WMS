@@ -16,6 +16,6 @@ namespace WMS.IRepository
 {
     public interface ISysUserRepository:IBaseRepository<SysUser>
     {
-
+        public  Task<bool> Register(SysUser user, SysUserLogOn logOn);
     }
 }

@@ -33,7 +33,7 @@ namespace WMS.WebApi.Controllers
         }
 
         [HttpGet("FindById")]
-        public async Task<ApiResult> QueryUserById([FromQuery] int Id)
+        public async Task<ApiResult> QueryUserById([FromQuery] string Id)
         {
             var data = await _iSysUserLogOnService.FindAsync(Id);
             if (data == null) return ApiResultHelper.Error("");

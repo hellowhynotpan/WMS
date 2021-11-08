@@ -89,7 +89,7 @@ namespace WMS.Repository
             return await Context.Updateable(entities).ExecuteCommandAsync();
         }
 
-        public async Task<TEntity> FindAsync(int id)
+        public async Task<TEntity> FindAsync(string id)
         {
             return await Context.Queryable<TEntity>().InSingleAsync(id);
         }

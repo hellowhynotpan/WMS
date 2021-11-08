@@ -91,7 +91,7 @@ namespace WMS.IRepository
         /// </summary>
         /// <param name="id">id</param>
         /// <returns>实体对象</returns>
-        Task<TEntity> FindAsync(int id);
+        Task<TEntity> FindAsync(string id);
 
         /// <summary>
         /// 根据表达式查询单笔

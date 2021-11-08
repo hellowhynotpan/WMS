@@ -38,7 +38,7 @@ namespace WMS.Model.DTO
         /// <summary>
         /// user_Id
         /// </summary>
-        public int UserId { get; set; }
+        public string UserId { get; set; }
 
     }
 }

@@ -74,7 +74,7 @@ namespace WMS.WebApi.Controllers
         public async Task<ApiResult> FaceLogin([FromServices] IMapper iMapper, [FromBody] FaceDTO face)
         {
             var user_id = _iBaiduFaceMService.SearchFace(face);
-            if (user_id == -1) return ApiResultHelper.Error("未找到人脸信息");
+            if (string.IsNullOrEmpty(user_id)) return ApiResultHelper.Error("未找到人脸信息");
             var _user = await _iSysUserService.FindAsync(x => x.Id == user_id);
             if (_user == null) return ApiResultHelper.Error("该用户已删除");
             var data = iMapper.Map<LoginRsDTO>(_user);
@@ -152,19 +152,19 @@ namespace WMS.WebApi.Controllers
                 return ApiResultHelper.Error("验证码错误");
             }
             var sysUser = iMapper.Map<SysUser>(registerDto);
+            sysUser.Id=Guid.NewGuid().ToString("N");
             sysUser.IsAdministrator = true;
             sysUser.CreateOwner = sysUser.Account;
             sysUser.CreateTime = DateTime.Now;
-            var data = await _iSysUserService.CreateAsync(sysUser);
-            if (data == null) return ApiResultHelper.Error("新增失败");
             SysUserLogOn sysUserLogOn = new SysUserLogOn();
             sysUserLogOn.Password = MD5Helper.MD5Encrypt32(registerDto.Password);
-            sysUserLogOn.UserId = data.Id;
+            sysUserLogOn.UserId = sysUser.Id;
+            sysUserLogOn.Id= Guid.NewGuid().ToString("N");
             sysUserLogOn.FirstVisitTime = DateTime.Now;
-            var data2 = await _iSysUserLogOnService.CreateAsync(sysUserLogOn);
-            if (data2 == null) return ApiResultHelper.Error("新增失败");
-            var loginRs = iMapper.Map<LoginRsDTO>(data);
-            loginRs.Token = JwtTools.GetToken(data);
+            var b = await _iSysUserService.Register(sysUser,sysUserLogOn);
+            if(!b) return ApiResultHelper.Error("注册失败");
+            var loginRs = iMapper.Map<LoginRsDTO>(sysUser);
+            loginRs.Token = JwtTools.GetToken(sysUser);
             return ApiResultHelper.Success(loginRs);
         }
 

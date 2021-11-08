@@ -15,8 +15,11 @@ using WMS.Repository;
 
 namespace WMS.IService
 {
+    /// <summary>
+    /// SysUserService接口
+    /// </summary>
     public interface ISysUserService:IBaseService<SysUser>
     {
-
+        public Task<bool> Register(SysUser user, SysUserLogOn sysUserLog);
     }
 }

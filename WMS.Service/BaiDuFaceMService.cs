@@ -43,7 +43,7 @@ namespace WMS.Service
                 var SECRET_KEY = "98d2t0PNp07QqHWyWqo5RGLb41WmpOo0";
                 var client = new Baidu.Aip.Face.Face(API_KEY, SECRET_KEY);
                 client.Timeout = 60000;
-                var result = client.UserAdd(face.Image, face.ImageType, face.GroupId, face.UserId.ToString());
+                var result = client.UserAdd(face.Image, face.ImageType, face.GroupId, face.UserId);
                 return result["result"]["face_token"].ToString();
             }
             catch(Exception ex)
@@ -56,7 +56,7 @@ namespace WMS.Service
         /// 人脸搜索
         /// </summary>
         /// <returns>user_id</returns>
-        public int SearchFace(FaceDTO face)
+        public string SearchFace(FaceDTO face)
         {
             try
             {
@@ -69,13 +69,13 @@ namespace WMS.Service
                 BaiduFaceApiResult apiResult = JObject2BaduApiResult(result);
                 if (apiResult.error_msg.ToLower() != "success"|| apiResult.score<90)
                 {
-                    return -1;
+                    return null;
                 }
-                return Convert.ToInt32(apiResult.user_id);
+                return apiResult.user_id;
             }
             catch (Exception ex)
             {
-                return -1;
+                return null;
             }
         }
 
@@ -88,7 +88,7 @@ namespace WMS.Service
                 var SECRET_KEY = "98d2t0PNp07QqHWyWqo5RGLb41WmpOo0";
                 var client = new Baidu.Aip.Face.Face(API_KEY, SECRET_KEY);
                 client.Timeout = 60000;
-                JObject result = client.UserUpdate(face.Image, face.ImageType, face.GroupId, face.UserId.ToString());
+                JObject result = client.UserUpdate(face.Image, face.ImageType, face.GroupId, face.UserId);
                 return result["result"]["face_token"].ToString();
             }
             catch (Exception ex)

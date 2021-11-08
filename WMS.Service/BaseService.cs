@@ -57,7 +57,7 @@ namespace WMS.Service
             return await _iBaseRepository.EditListAsync(entities);
         }
 
-        public async Task<TEntity> FindAsync(int id)
+        public async Task<TEntity> FindAsync(string id)
         {
             return await _iBaseRepository.FindAsync(id);
         }

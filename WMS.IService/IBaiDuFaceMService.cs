@@ -28,7 +28,7 @@ namespace WMS.IService
         /// </summary>
         /// <param name="face">人脸信息</param>
         /// <returns>userId</returns>
-        public int SearchFace(FaceDTO face);
+        public string SearchFace(FaceDTO face);
 
         /// <summary>
         /// 人脸更新
