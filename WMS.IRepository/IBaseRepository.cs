@@ -156,5 +156,14 @@ namespace WMS.IRepository
         /// <param name="total">页数总计</param>
         /// <returns></returns>
         Task<List<TEntity>> QueryAsync(Expression<Func<TEntity, bool>> func, int page, int size, RefAsync<int> total);
+
+        /// <summary>
+        /// 查询
+        /// </summary>
+        /// <param name="func"></param>
+        /// <param name="num"></param>
+        /// <param name="sortDesc"></param>
+        /// <returns></returns>
+        Task<List<TEntity>> QueryAsync(Expression<Func<TEntity, bool>> func, int num, Expression<Func<TEntity, object>> sortDesc);
     }
 }

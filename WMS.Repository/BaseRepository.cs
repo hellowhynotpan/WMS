@@ -110,6 +110,15 @@ namespace WMS.Repository
             return await base.Context.Queryable<TEntity>().ToPageListAsync(page, size, total);
         }
 
+        public async Task<List<TEntity>> QueryAsync(Expression<Func<TEntity, bool>> func,int num,Expression<Func<TEntity, object>> sortDesc )
+        {
+            return await base.Context.Queryable<TEntity>()
+              .Where(func)
+              .Take(num)
+              .OrderBy(sortDesc, OrderByType.Desc)
+              .ToListAsync();
+        }
+
         public async Task<List<TEntity>> QueryAsync(Expression<Func<TEntity, bool>> func, int page, int size, RefAsync<int> total)
         {
             return await base.Context.Queryable<TEntity>()

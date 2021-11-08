@@ -106,5 +106,10 @@ namespace WMS.Service
         {
             return await _iBaseRepository.QueryAsyncByDesc(func, sortDesc, page, size, total);
         }
+
+        public async Task<List<TEntity>> QueryAsync(Expression<Func<TEntity, bool>> func, int num, Expression<Func<TEntity, object>> sortDesc) 
+        {
+            return await _iBaseRepository.QueryAsync(func, num, sortDesc);
+        }
     }
 }
