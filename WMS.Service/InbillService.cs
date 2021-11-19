@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using WMS.IRepository;
 using WMS.IService;
 using WMS.Model;
+using WMS.Model.DTO;
 
 namespace WMS.Service
 {

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Utils.Vaild;
 using WMS.IService;
 using WMS.Model;
 using WMS.Model.DTO;
@@ -111,6 +112,7 @@ namespace WMS.WebApi.Controllers
         [HttpGet("SendSmsByRegister")]
         public async Task<ApiResult> SendSmsByRegister([FromQuery] string mobilePhone)
         {
+            if(!Valid.IsPhoneNumber(mobilePhone)) return ApiResultHelper.Error("手机号码不合法");
             var _user = await _iSysUserService.FindAsync(x => x.MobilePhone == mobilePhone);
             if (_user != null) return ApiResultHelper.Error("该手机号已注册");
             var cachedMsgCaptcha = GetMemoryCache.Get<UserDTO>(mobilePhone);

@@ -23,14 +23,14 @@ namespace WMS.Model
         // <summary>
         /// 主键
         /// </summary>
-        [SugarColumn(ColumnName = "id", IsPrimaryKey = true, ColumnDataType = "varchar(50)", ColumnDescription = "主键")]//数据库是自增才配自增 
+        [SugarColumn(ColumnName = "id", IsPrimaryKey = true, ColumnDataType = "varchar(50)", ColumnDescription = "主键")] 
         public string Id { get; set; }
 
         /// <summary>
         /// 入库单编号
         /// </summary>
         [SugarColumn(ColumnName = "Inbill_no", ColumnDataType = "varchar(50)", ColumnDescription = "入库单编号", IsNullable = false)]
-        public string Inbill_no { get; set; }
+        public string InbillNo { get; set; }
 
         /// <summary>
         ///入库通知单主表主键
@@ -47,8 +47,8 @@ namespace WMS.Model
         /// <summary>
         ///物料類型
         /// </summary>
-        [SugarColumn(ColumnName = "inbill_type", ColumnDataType = "varchar(100)", ColumnDescription = "物料類型0:采购人库 1:完工入库 2: 工单退料 3: 销售退回 4:其他入库", IsNullable = false)]
-        public bool InbillType { get; set; }
+        [SugarColumn(ColumnName = "inbill_type",  ColumnDescription = "物料類型0:采购人库 1:完工入库 2: 工单退料 3: 销售退回 4:其他入库", IsNullable = false)]
+        public int InbillType { get; set; }
 
         /// <summary>
         /// 备注
@@ -60,13 +60,24 @@ namespace WMS.Model
         /// 状态
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "状态", IsNullable = false)]
-        public bool Status { get; set; }
+        public int Status { get; set; }
+
+        //入库单明细
+        [SugarColumn(IsIgnore =true)]
+        public List<InbillD> InbillDs { get; set; }
 
         /// <summary>
         /// 创建用户
         /// </summary>
         [SugarColumn(ColumnName = "create_owner", ColumnDescription = "创建用户", ColumnDataType = "varchar(50)", IsNullable = false)]
         public string CreateOwner { get; set; }
+
+        /// <summary>
+        /// 创建时间
+        /// </summary>
+
+        [SugarColumn(ColumnName = "create_time", ColumnDescription = "创建时间", IsNullable = false)]
+        public DateTime CreateTime { get; set; }
 
         /// <summary>
         /// 最后修改时间

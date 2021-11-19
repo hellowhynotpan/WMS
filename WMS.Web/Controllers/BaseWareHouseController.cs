@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MS.WebApi.Common;
@@ -46,6 +47,7 @@ namespace WMS.WebApi.Controllers
         [HttpPost("Edit")]
         public async Task<ApiResult> EditUser([FromBody] BaseWareHouse baseWareHouse)
         {
+            baseWareHouse.LastUpdTime = DateTime.Now;
             var data = await _iBaseWareHouseService.EditAsync(baseWareHouse);
             if (data != 1) return ApiResultHelper.Error("修改失败");
             return ApiResultHelper.Success("修改成功");
@@ -54,14 +56,16 @@ namespace WMS.WebApi.Controllers
         [HttpPost("Create")]
         public async Task<ApiResult> Create(BaseWareHouse baseWareHouse)
         {
-            var wh = await _iBaseWareHouseService.FindAsync(x => x.WhNo == baseWareHouse.WhNo);
+            var wh = await _iBaseWareHouseService.FindAsync(x => x.WhNo == baseWareHouse.WhNo && x.CreateOwner == baseWareHouse.CreateOwner);
             if(wh!=null) return ApiResultHelper.Error("仓库编号重复");
+            wh = await _iBaseWareHouseService.FindAsync(x =>x.WhName == baseWareHouse.WhName&&x.CreateOwner==baseWareHouse.CreateOwner);
+            if (wh != null) return ApiResultHelper.Error("仓库名称重复");
             baseWareHouse.Id = Guid.NewGuid().ToString("N");
             if (string.IsNullOrEmpty(baseWareHouse.WhNo))
             {
                 baseWareHouse.WhNo= "WH"+DateTime.Now.ToString("yyyyMMddHHmmss");
             }
-            baseWareHouse.Status = true;
+            baseWareHouse.Status = 0;
             baseWareHouse.CreateTime = DateTime.Now;
             var data = await _iBaseWareHouseService.CreateAsync(baseWareHouse);
             if (data == null) return ApiResultHelper.Error("新增失败");
@@ -69,7 +73,7 @@ namespace WMS.WebApi.Controllers
         }
 
         [HttpGet("QueryPage")]
-        public async Task<ApiResult> Create([FromQuery] string Func, [FromQuery] int num, [FromQuery] string createOwner)
+        public async Task<ApiResult> QueryPage([FromQuery] string Func, [FromQuery] int num, [FromQuery] string createOwner)
         {
             Expression<Func<BaseWareHouse, bool>> func = u => true;
             if (!string.IsNullOrEmpty(Func))
@@ -77,19 +81,27 @@ namespace WMS.WebApi.Controllers
                 func = ExpressionFuncExtender.And<BaseWareHouse>(func, x => x.WhName.ToLower().Contains(Func.Trim().ToLower())
                 ||x.WhNo.ToLower().Contains(Func.Trim().ToLower()));
             }
-            func = ExpressionFuncExtender.And<BaseWareHouse>(func, x => x.CreateOwner== createOwner&&x.Status==true);
+            func = ExpressionFuncExtender.And<BaseWareHouse>(func, x => x.CreateOwner== createOwner);
             var data = await _iBaseWareHouseService.QueryAsync(func, num, x=>x.CreateTime);
             return ApiResultHelper.Success(data);
         }
 
-        [HttpGet("AsInvalid")]
-        public async Task<ApiResult> AsInvalid([FromQuery] string id, [FromQuery] string invalidOwner)
+        [HttpGet("QueryWhName")]
+        public async Task<ApiResult> QueryWhName([FromServices] IMapper iMapper, [FromQuery] string createOwner)
+        {
+            List<BaseWareHouse> baseWareHouses = await _iBaseWareHouseService.QueryAsync(x => x.CreateOwner == createOwner && x.Status == 0);
+            var baseWareHouseDTO = iMapper.Map<List<BaseWareHouseDTO>>(baseWareHouses);
+            return ApiResultHelper.Success(baseWareHouseDTO);
+        }
+
+        [HttpGet("Invalid")]
+        public async Task<ApiResult> Invalid([FromQuery] string id, [FromQuery] string invalidOwner)
         {
             var data = await _iBaseWareHouseService.FindAsync(x=>x.Id== id.Trim());
             if (data == null) return ApiResultHelper.Error("仓库不存在");
             data.InvalidOwner = invalidOwner;
             data.InvalidTime = DateTime.Now;
-            data.Status = false;
+            data.Status = 1;
             int num = await _iBaseWareHouseService.EditAsync(data);
             if(num!=1) return ApiResultHelper.Error("作废失败");
             return ApiResultHelper.Success(data);

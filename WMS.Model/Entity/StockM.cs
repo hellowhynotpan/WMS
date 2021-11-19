@@ -22,7 +22,7 @@ namespace WMS.Model
         // <summary>
         /// 主键
         /// </summary>
-        [SugarColumn(ColumnName = "id", IsIdentity = true, IsPrimaryKey = true, ColumnDataType = "varchar(50)", ColumnDescription = "主键")]//数据库是自增才配自增 
+        [SugarColumn(ColumnName = "id",IsPrimaryKey = true, ColumnDataType = "varchar(50)", ColumnDescription = "主键")]//数据库是自增才配自增 
         public string Id { get; set; }
 
 
@@ -30,25 +30,25 @@ namespace WMS.Model
         /// 仓库主表主键
         /// </summary>
         [SugarColumn(ColumnName = "wh_id", ColumnDataType = "varchar(50)", ColumnDescription = "仓库主表主键", IsNullable = false)]
-        public int Wh_Id { get; set; }
+        public string WhId { get; set; }
 
         /// <summary>
         /// 储位主表主键
         /// </summary>
         [SugarColumn(ColumnName = "cs_id", ColumnDataType = "varchar(50)", ColumnDescription = "储位主表主键", IsNullable = false)]
-        public int Cs_Id { get; set; }
+        public string CsId { get; set; }
 
         /// <summary>
         /// 物料主表主键
         /// </summary>
         [SugarColumn(ColumnName = "part_id", ColumnDataType = "varchar(50)", ColumnDescription = "物料主表主键", IsNullable = false)]
-        public int Part_Id { get; set; }
+        public string PartId { get; set; }
 
         /// <summary>
         /// 库存数量
         /// </summary>
         [SugarColumn(ColumnName = "stock_qty",  ColumnDescription = "库存数量", IsNullable = false)]
-        public int Sock_Qty { get; set; }
+        public int StockQty { get; set; }
 
         /// <summary>
         /// 创建时间

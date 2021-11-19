@@ -40,6 +40,9 @@ namespace WMS.WebApi.IocExtensions
             services.AddScoped<IInbillRepository, InbillRepository>();
             services.AddScoped<IInbillService, InbillService>();
 
+            services.AddScoped<IInbillDRepository, InbillDRepository>();
+            services.AddScoped<IInbillDService, InbillDService>();
+
             services.AddScoped<IBaseWareHouseRepository, BaseWareHouseRepository>();
             services.AddScoped<IBaseWareHouseService, BaseWareHouseService>();
 

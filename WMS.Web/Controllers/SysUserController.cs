@@ -22,13 +22,13 @@ namespace WMS.WebApi.Controllers
         private readonly ISysUserService _iSysUserService;
         private readonly ISysUserLogOnService _iSysUserLogOnService;
         private readonly IBaiDuFaceMService _iBaiduFaceMService;
+
         public SysUserController(ISysUserService iSysUserService, ISysUserLogOnService iSysUserLogOnService, IBaiDuFaceMService iBaiDuFaceMService)
         {
             _iSysUserService = iSysUserService;
             _iSysUserLogOnService = iSysUserLogOnService;
             _iBaiduFaceMService = iBaiDuFaceMService;
         }
-    
 
         [HttpGet("GetAll")]
         public async Task<ApiResult> GetUser()

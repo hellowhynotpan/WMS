@@ -1,13 +1,18 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MS.WebApi.Common;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using WMS.IService;
 using WMS.Model;
+using WMS.Model.DTO;
 using WMS.WebApi.Common;
 
 namespace WMS.WebApi.Controllers
@@ -32,15 +37,38 @@ namespace WMS.WebApi.Controllers
             return ApiResultHelper.Success(data);
         }
 
-        [HttpGet("FindById")]
-        public async Task<ApiResult> QueryUserById([FromQuery] string id)
+        [HttpGet("Find")]
+        public async Task<ApiResult> Find([FromQuery] string id)
         {
             var data = await _iBasePartService.FindAsync(id);
             if (data == null) return ApiResultHelper.Error("查询失败");
             return ApiResultHelper.Success(data);
         }
 
-        [HttpGet("Edit")]
+        [HttpPost("Create")]
+        public async Task<ApiResult> Create([FromBody] BasePart basePart)
+        {
+            basePart.Id = Guid.NewGuid().ToString("N");
+            if (string.IsNullOrEmpty(basePart.PartNo))
+            {
+                basePart.PartNo = "PART" + DateTime.Now.ToString("yyyyMMddHHmmss");
+            }
+            if (string.IsNullOrEmpty(basePart.PartName))
+            {
+                return ApiResultHelper.Error("物料名称不允许为空");
+            }
+            var cs = await _iBasePartService.FindAsync(x => x.PartNo == basePart.PartNo && x.CreateOwner == basePart.CreateOwner);
+            if (cs != null) return ApiResultHelper.Error("物料编号已存在");
+            cs = await _iBasePartService.FindAsync(x => x.PartName == basePart.PartName && x.CreateOwner == basePart.CreateOwner);
+            if (cs != null) return ApiResultHelper.Error("物料名称已存在");
+            basePart.CreateTime = DateTime.Now;
+            basePart.Status = 0;
+            var b = await _iBasePartService.CreateAsync(basePart);
+            if (b == null) return ApiResultHelper.Error("新增失败");
+            return ApiResultHelper.Success("新增成功");
+        }
+
+        [HttpPost("Edit")]
         public async Task<ApiResult> EditUser([FromBody] BasePart basePart)
         {
             var data = await _iBasePartService.EditAsync(basePart);
@@ -48,21 +76,77 @@ namespace WMS.WebApi.Controllers
             return ApiResultHelper.Success("修改成功");
         }
 
-        [HttpGet("Create")]
-        public async Task<ApiResult> CreateUser([FromBody] BasePart basePart)
+        [HttpGet("QueryPartName")]
+        public async Task<ApiResult> QueryPartName([FromServices] IMapper iMapper, [FromQuery] string createOwner)
         {
-            var data = await _iBasePartService.CreateAsync(basePart);
-            if (data == null) return ApiResultHelper.Error("新增失败");
-            return ApiResultHelper.Success("新增成功");
+            List<BasePart> basePart = await _iBasePartService.QueryAsync(x => x.CreateOwner == createOwner && x.Status == 0);
+            var baseParteDTO = iMapper.Map<List<BasePartDTO>>(basePart);
+            return ApiResultHelper.Success(baseParteDTO);
+        }
+        [HttpGet("QueryPage")]
+        public async Task<ApiResult> QueryPage([FromQuery] string Func, [FromQuery] int num, [FromQuery] string createOwner)
+        {
+            Expression<Func<BasePart, bool>> func = u => true;
+            if (!string.IsNullOrEmpty(Func))
+            {
+                func = ExpressionFuncExtender.And<BasePart>(func, x => x.PartName.ToLower().Contains(Func.Trim().ToLower())
+                || x.PartNo.ToLower().Contains(Func.Trim().ToLower()));
+            }
+            func = ExpressionFuncExtender.And<BasePart>(func, x => x.CreateOwner == createOwner);
+            var data = await _iBasePartService.QueryAsync(func, num, x => x.CreateTime);
+            return ApiResultHelper.Success(data);
         }
 
-        [HttpGet("QueryPage")]
-        public async Task<ApiResult> Create([FromQuery] int page, [FromQuery] int size)
+
+        [HttpPost("CreateByImg")]
+        [RequestSizeLimit(Int64.MaxValue)]
+        public async Task<ApiResult> CreateByImg([FromForm] IFormCollection collection)
         {
-            //总页数 异步引用类型
-            RefAsync<int> total = 0;
-            var data = await _iBasePartService.QueryAsync(page, size, total);
-            return ApiResultHelper.Success(data, total);
+            BasePart basePart = new BasePart();
+            basePart.Id = Guid.NewGuid().ToString("N");
+            basePart.PartNo = collection["partNo"];
+            if (string.IsNullOrEmpty(basePart.PartNo))
+            {
+                basePart.PartNo = "PART" + DateTime.Now.ToString("yyyyMMddHHmmss");
+            }
+            if (string.IsNullOrEmpty(collection["partName"]))
+            {
+                return ApiResultHelper.Error("物料名称不允许为空");
+            }
+            basePart.PartName = collection["partName"];
+            basePart.PartSpec = collection["partSpec"];
+            basePart.PartType = Convert.ToInt32(collection["partType"]);
+            basePart.Memo = collection["Memo"];
+            basePart.CreateOwner = collection["createOwner"];
+            basePart.CreateTime = DateTime.Now;
+            basePart.Status = 0;
+            var cs = await _iBasePartService.FindAsync(x => x.PartNo == basePart.PartNo && x.CreateOwner == basePart.CreateOwner);
+            if (cs != null) return ApiResultHelper.Error("物料编号已存在");
+            cs = await _iBasePartService.FindAsync(x => x.PartName == basePart.PartName && x.CreateOwner == basePart.CreateOwner);
+            if (cs != null) return ApiResultHelper.Error("物料名称已存在");
+            FormFileCollection filelist = (FormFileCollection)collection.Files;
+            foreach (IFormFile file in filelist)
+            {
+                string temp = Guid.NewGuid().ToString("N");
+                string Tpath = "./static/images/part/";
+                string name = filelist[0].FileName;
+                string type = System.IO.Path.GetExtension(name);
+                DirectoryInfo di = new DirectoryInfo(Tpath);
+                basePart.PartImage = "/img/part/" + temp + type;
+                if (!di.Exists)
+                {
+                    di.Create();
+                }
+                using (FileStream fs = System.IO.File.Create(Tpath + temp + type))
+                {
+                    filelist[0].CopyTo(fs);
+                    fs.Flush();
+                }
+                break;
+            }
+            var b = await _iBasePartService.CreateAsync(basePart);
+            if (b == null) return ApiResultHelper.Error("新增失败");
+            return ApiResultHelper.Success("新增成功");
         }
     }
 }

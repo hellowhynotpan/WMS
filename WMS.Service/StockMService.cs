@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using WMS.IRepository;
 using WMS.IService;
 using WMS.Model;
+using WMS.Model.DTO;
 
 namespace WMS.Service
 {
@@ -23,6 +24,11 @@ namespace WMS.Service
         {
             base._iBaseRepository = iStockMRepository;
             _iStockMRepository = iStockMRepository;
+        }
+
+        public async Task<List<StockDTO>> QueryStock(string createOwner)
+        {
+            return await _iStockMRepository.QueryStock(createOwner);
         }
     }
 }

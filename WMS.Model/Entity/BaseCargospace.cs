@@ -53,8 +53,8 @@ namespace WMS.Model
         /// <summary>
         /// 状态
         /// </summary>
-        [SugarColumn(ColumnName = "status", ColumnDescription = "状态", IsNullable = false)]
-        public bool Status { get; set; }
+        [SugarColumn(ColumnName = "status", ColumnDescription = "状态0: 正常 1: 作废2: 冻结", IsNullable = false)]
+        public int Status { get; set; }
 
         /// <summary>
         /// 创建时间
@@ -72,7 +72,7 @@ namespace WMS.Model
         /// 最后修改时间
         /// </summary>
         [SugarColumn(ColumnName = "last_upd_time", ColumnDescription = "最后修改时间", IsNullable = true)]
-        public DateTime LastUpdTIME { get; set; }
+        public DateTime LastUpdTime { get; set; }
 
         /// <summary>
         /// 最后修改用户

@@ -11,10 +11,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WMS.Model;
+using WMS.Model.DTO;
 
 namespace WMS.IRepository
 {
     public interface  IStockMRepository : IBaseRepository<StockM>
     {
+        public Task<List<StockDTO>> QueryStock(string createOwner);
     }
 }

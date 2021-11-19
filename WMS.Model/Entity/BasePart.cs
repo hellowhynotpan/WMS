@@ -54,19 +54,19 @@ namespace WMS.Model
         /// 物料類型
         /// </summary>
         [SugarColumn(ColumnName = "part_type",ColumnDescription = "物料類型", IsNullable = false)]
-        public bool PartType { get; set; }
+        public int PartType { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        [SugarColumn(ColumnName = "memo", ColumnDataType = "varchar(500)", ColumnDescription = "备注", IsNullable = false)]
+        [SugarColumn(ColumnName = "memo", ColumnDataType = "varchar(500)", ColumnDescription = "备注", IsNullable = true)]
         public string Memo { get; set; }
 
         /// <summary>
         /// 状态
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "状态", IsNullable = false)]
-        public bool Status { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
         /// 创建时间

@@ -10,14 +10,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WMS.IRepository;
-using WMS.Model;
-using WMS.Model.DTO;
 
-namespace WMS.Repository
+namespace WMS.Model.DTO
 {
-    public class InbillRepository : BaseRepository<Inbill>, IInbillRepository
+    public class BasePartDTO
     {
-        
+        //主键
+        public string Id { get; set; }
+
+        /// <summary>
+        /// 物料名称
+        /// </summary>
+        public string PartName { get; set; }
     }
 }

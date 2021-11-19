@@ -20,6 +20,10 @@ namespace WMS.WebApi.Common
             CreateMap<UserDTO, SysUser>()
                 .ForMember(c => c.Id, opt => opt.Ignore());
             CreateMap<SysUser, LoginRsDTO>();
+            CreateMap<BaseWareHouse, BaseWareHouseDTO>();
+            CreateMap<BaseCargospace, BaseCargospaceDTO>()
+                .ForMember(c => c.WhId, opt => opt.Ignore());
+            CreateMap<BasePart, BasePartDTO>();
         }
     }
 }

@@ -9,12 +9,14 @@ using WMS.IService;
 using WMS.WebApi.Common;
 using WMS.Model;
 using Microsoft.AspNetCore.Authorization;
+using System.Linq.Expressions;
+using MS.WebApi.Common;
+using WMS.Model.DTO;
 
 namespace WMS.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class StockMController : ControllerBase
     {
         private readonly IStockMService _iStockMService;
@@ -56,12 +58,46 @@ namespace WMS.WebApi.Controllers
         }
 
         [HttpGet("QueryPage")]
-        public async Task<ApiResult> Create([FromQuery] int page, [FromQuery] int size)
+        public async Task<ApiResult> QueryPage([FromQuery] int partType,[FromQuery] string whId,[FromQuery]string func, [FromQuery] int num, [FromQuery] string createOwner, [FromQuery] string csNo, [FromQuery] string partNo, [FromQuery] string partName, [FromQuery] string partSpec, bool isInAbleNone)
         {
-            //总页数 异步引用类型
-            RefAsync<int> total = 0;
-            var data = await _iStockMService.QueryAsync(page, size, total);
-            return ApiResultHelper.Success(data, total);
+            var data = await _iStockMService.QueryStock(createOwner);
+            Expression<Func<StockDTO, bool>> funcStock = u => true;
+            if (!string.IsNullOrEmpty(partNo))
+            {
+                funcStock = ExpressionFuncExtender.And<StockDTO>(funcStock, x => x.PartNo == partNo);
+            }
+            if (!string.IsNullOrEmpty(partName))
+            {
+                funcStock = ExpressionFuncExtender.And<StockDTO>(funcStock, x => x.PartName == partName);
+            }
+            if (!string.IsNullOrEmpty(partSpec))
+            {
+                funcStock = ExpressionFuncExtender.And<StockDTO>(funcStock, x => x.PartSpec == partSpec);
+            }
+            if (!string.IsNullOrEmpty(whId))
+            {
+                funcStock = ExpressionFuncExtender.And<StockDTO>(funcStock, x => x.WhId == whId);
+            }
+            if (!string.IsNullOrEmpty(csNo))
+            {
+                funcStock = ExpressionFuncExtender.And<StockDTO>(funcStock, x => x.CsNo == csNo);
+            }
+            if (!isInAbleNone)
+            {
+                funcStock = ExpressionFuncExtender.And<StockDTO>(funcStock, x => x.StockQty != 0);
+            }
+            if (partType!=4)
+            {
+                funcStock = ExpressionFuncExtender.And<StockDTO>(funcStock, x => x.PartType == partType);
+            }
+            if (!string.IsNullOrEmpty(func))
+            {
+                funcStock = ExpressionFuncExtender.And<StockDTO>(funcStock, x => x.WhName.ToLower().Contains(func)|| x.CsName.ToLower().Contains(func.ToLower()) || x.CsNo.ToLower().Contains(func.ToLower()) || x.PartName.ToLower().Contains(func.ToLower()) || x.PartSpec.ToLower().Contains(func.ToLower()) || x.PartNo.ToLower().Contains(func.ToLower()));
+            }
+           Delegate d = funcStock.Compile();
+           Func<StockDTO,bool> f = (Func<StockDTO,bool>)d;
+           data = data.Where(f).Take(num).ToList();
+           return ApiResultHelper.Success(data);
         }
     }
 }

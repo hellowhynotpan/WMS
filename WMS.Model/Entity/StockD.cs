@@ -34,8 +34,8 @@ namespace WMS.Model
         // <summary>
         /// 条码编号
         /// </summary>
-        [SugarColumn(ColumnName = "so_no", ColumnDataType = "varchar(300)", ColumnDescription = "条码编号", IsNullable = false)]
-        public string SoNo { get; set; }
+        [SugarColumn(ColumnName = "sn_no", ColumnDataType = "varchar(300)", ColumnDescription = "条码编号", IsNullable = false)]
+        public string SnNo { get; set; }
 
         // <summary>
         /// 条码类型
