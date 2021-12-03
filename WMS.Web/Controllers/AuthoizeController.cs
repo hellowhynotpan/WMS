@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Utils.Vaild;
 using WMS.IService;
-using WMS.Model;
+using WMS.Model.Entity;
 using WMS.Model.DTO;
 using WMS.WebApi.Common;
 
@@ -109,6 +109,33 @@ namespace WMS.WebApi.Controllers
         }
 
 
+        [HttpGet("SendSmsByResetPwd")]
+        public async Task<ApiResult> SendSmsByResetPwd([FromQuery] string mobilePhone)
+        {
+            var _user = await _iSysUserService.FindAsync(x => x.MobilePhone == mobilePhone);
+            if (_user == null) return ApiResultHelper.Error("该手机号未注册");
+            var cachedMsgCaptcha = GetMemoryCache.Get<UserDTO>(mobilePhone);
+            if (cachedMsgCaptcha != null)
+            {
+                var offsetSecionds = (DateTime.Now - cachedMsgCaptcha.CreateTime).Seconds;
+                if (offsetSecionds < 60)
+                {
+                    return ApiResultHelper.Error("短信验证码获取太频繁，请稍后重试");
+                }
+            }
+            UserDTO resetDTO = new UserDTO();
+            resetDTO.SmsCode = ALiSMSHelper.CreateRandomNumber(6);
+            resetDTO.CreateTime = DateTime.Now;
+            resetDTO.ValidateCount = 0;
+            resetDTO.MobilePhone = mobilePhone;
+            GetMemoryCache.Set(resetDTO.MobilePhone, resetDTO, TimeSpan.FromMinutes(2));
+            //调用第三方SDK实际发送短信
+            //.....
+            return ApiResultHelper.Success("发送成功,验证码为:" + resetDTO.SmsCode);
+        }
+
+       
+
         [HttpGet("SendSmsByRegister")]
         public async Task<ApiResult> SendSmsByRegister([FromQuery] string mobilePhone)
         {
@@ -170,11 +197,26 @@ namespace WMS.WebApi.Controllers
             return ApiResultHelper.Success(loginRs);
         }
 
-        [HttpGet("Test")]
-        public async Task<ApiResult> Test()
+        [HttpPost("ResetPwd")]
+        public async Task<ApiResult> ResetPwd([FromBody] UserDTO userDTO)
         {
-            GetLog.Error(GetConfiguration.GetSection("BaiduAiSetting").GetSection("API_KEY").Value) ;
-            return ApiResultHelper.Success("");
+            var cachedMsgCaptcha = GetMemoryCache.Get<UserDTO>(userDTO.MobilePhone);
+            if (cachedMsgCaptcha == null || cachedMsgCaptcha.ValidateCount >= 3)
+            {
+                GetMemoryCache.Remove(userDTO.MobilePhone);
+                return ApiResultHelper.Error("短信验证码无效，请重新获取");
+            }
+            cachedMsgCaptcha.ValidateCount++;
+            if (!string.Equals(cachedMsgCaptcha.SmsCode, userDTO.SmsCode, StringComparison.OrdinalIgnoreCase))
+            {
+                return ApiResultHelper.Error("验证码错误");
+            }
+            var data = await _iSysUserService.FindAsync(x => x.MobilePhone == userDTO.MobilePhone);
+            var user = await _iSysUserLogOnService.FindAsync(x => x.UserId == data.Id);
+            user.Password= MD5Helper.MD5Encrypt32(userDTO.Password);
+            var b = await _iSysUserLogOnService.EditAsync(user);
+            if(b != 1) return ApiResultHelper.Error("修改失败");
+            return ApiResultHelper.Success("修改成功");
         }
     }
 }

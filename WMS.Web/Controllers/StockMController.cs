@@ -7,11 +7,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using WMS.IService;
 using WMS.WebApi.Common;
-using WMS.Model;
-using Microsoft.AspNetCore.Authorization;
 using System.Linq.Expressions;
 using MS.WebApi.Common;
 using WMS.Model.DTO;
+using WMS.Model.Entity;
 
 namespace WMS.WebApi.Controllers
 {

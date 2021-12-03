@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WMS.IService;
 using WMS.WebApi.Common;
-using WMS.Model;
+using WMS.Model.Entity;
 using SqlSugar;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper;

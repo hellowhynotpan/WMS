@@ -10,7 +10,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using WMS.IService;
-using WMS.Model;
+using WMS.Model.Entity;
 using WMS.Model.DTO;
 using WMS.WebApi.Common;
 
@@ -21,10 +21,13 @@ namespace WMS.WebApi.Controllers
     [Authorize]
     public class BaseWareHouseController : ControllerBase
     {
+        private readonly IBaseCargospaceService _iBaseCargospaceService;
+
         private readonly IBaseWareHouseService _iBaseWareHouseService;
 
-        public BaseWareHouseController(IBaseWareHouseService iBaseWareHouseService)
+        public BaseWareHouseController(IBaseCargospaceService iBaseCargospaceService, IBaseWareHouseService iBaseWareHouseService)
         {
+            _iBaseCargospaceService = iBaseCargospaceService;
             _iBaseWareHouseService = iBaseWareHouseService;
 
         }
@@ -58,7 +61,7 @@ namespace WMS.WebApi.Controllers
         {
             var wh = await _iBaseWareHouseService.FindAsync(x => x.WhNo == baseWareHouse.WhNo && x.CreateOwner == baseWareHouse.CreateOwner);
             if(wh!=null) return ApiResultHelper.Error("仓库编号重复");
-            wh = await _iBaseWareHouseService.FindAsync(x =>x.WhName == baseWareHouse.WhName&&x.CreateOwner==baseWareHouse.CreateOwner);
+            wh = await _iBaseWareHouseService.FindAsync(x =>x.WhName == baseWareHouse.WhName&&x.CreateOwner==baseWareHouse.CreateOwner && x.Status == 0);
             if (wh != null) return ApiResultHelper.Error("仓库名称重复");
             baseWareHouse.Id = Guid.NewGuid().ToString("N");
             if (string.IsNullOrEmpty(baseWareHouse.WhNo))
@@ -97,14 +100,21 @@ namespace WMS.WebApi.Controllers
         [HttpGet("Invalid")]
         public async Task<ApiResult> Invalid([FromQuery] string id, [FromQuery] string invalidOwner)
         {
-            var data = await _iBaseWareHouseService.FindAsync(x=>x.Id== id.Trim());
-            if (data == null) return ApiResultHelper.Error("仓库不存在");
-            data.InvalidOwner = invalidOwner;
-            data.InvalidTime = DateTime.Now;
-            data.Status = 1;
-            int num = await _iBaseWareHouseService.EditAsync(data);
-            if(num!=1) return ApiResultHelper.Error("作废失败");
-            return ApiResultHelper.Success(data);
+            var wh = await _iBaseWareHouseService.FindAsync(x=>x.Id== id.Trim()&&x.Status==0);
+            if (wh == null) return ApiResultHelper.Error("仓库已作废");
+            wh.InvalidOwner = invalidOwner;
+            wh.InvalidTime = DateTime.Now;
+            wh.Status = 1;
+            var csList = await _iBaseCargospaceService.QueryAsync(x => x.WhId == id.Trim());
+            foreach (var it in csList)
+            {
+                it.InvalidOwner = invalidOwner;
+                it.InvalidTime= DateTime.Now;
+                it.Status = 1;
+            }
+            bool b = await _iBaseWareHouseService.InvalidWh(wh, csList);
+            if(!b) return ApiResultHelper.Error("作废失败");
+            return ApiResultHelper.Success("作废成功");
         }
     }
 }

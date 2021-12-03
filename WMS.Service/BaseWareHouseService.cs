@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WMS.IRepository;
 using WMS.IService;
-using WMS.Model;
+using WMS.Model.Entity;
 
 namespace WMS.Service
 {
@@ -23,6 +23,11 @@ namespace WMS.Service
         {
             base._iBaseRepository = iBaseWareHouseRepository;
             _iBaseWareHouseRepository = iBaseWareHouseRepository;
+        }
+
+        public async Task<bool> InvalidWh(BaseWareHouse wh, List<BaseCargospace> csList)
+        {
+            return await _iBaseWareHouseRepository.InvalidWh(wh, csList);
         }
     }
 }

@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WMS.Model
+namespace WMS.Model.Entity
 {
     /// <summary>
     /// 入库单明细
@@ -65,7 +65,7 @@ namespace WMS.Model
         /// <summary>
         /// 入库数量
         /// </summary>
-        [SugarColumn(ColumnName = "inbill_qty", ColumnDataType = "varchar(100)", ColumnDescription = "入库数量", IsNullable = false)]
+        [SugarColumn(ColumnName = "inbill_qty",  ColumnDescription = "入库数量", IsNullable = false)]
         public int InbillQty { get; set; }
     }
 }

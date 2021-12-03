@@ -52,6 +52,9 @@ namespace WMS.WebApi.IocExtensions
             services.AddScoped<IBaseCargospaceRepository, BaseCargospaceRepository>();
             services.AddScoped<IBaseCargospaceService, BaseCargospaceService>();
 
+            services.AddScoped<IInbillDSnRespository, InbillDSnRespository>();
+            services.AddScoped<IInbillDSnService, InbillDSnService>();
+
             services.AddScoped<IBaiDuFaceMService, BaiDuFaceMService>();
             return services;
         }

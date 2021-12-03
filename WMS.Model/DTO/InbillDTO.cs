@@ -15,6 +15,7 @@ namespace WMS.Model.DTO
 {
    public class InbillDTO
     {
+        public string Id { get; set; }
         public string InbillNo { get; set; }
 
         public string ErpCode { get; set; }
@@ -26,6 +27,8 @@ namespace WMS.Model.DTO
         public int Status { get; set; }
 
         public string CreateOwner { get; set; }
+
+        public string LastUpdOwner { get; set; }
 
         public List<InbillDDTO> InbillDs { get; set; }
     }

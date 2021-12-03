@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WMS.IService;
-using WMS.Model;
+using WMS.Model.Entity;
 using WMS.WebApi.Common;
 
 namespace WMS.WebApi.Controllers

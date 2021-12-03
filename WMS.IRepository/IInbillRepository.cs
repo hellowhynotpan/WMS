@@ -10,12 +10,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WMS.Model;
+using WMS.Model.Entity;
 using WMS.Model.DTO;
 
 namespace WMS.IRepository
 {
     public interface IInbillRepository : IBaseRepository<Inbill>
     {
+        public  Task<bool> InBill(Inbill inbill, List<InbillD> inbillDs, List<InbillDSn> inbillDSns);
+
+        public Task<bool> EditInBill(Inbill inbill, List<InbillD> inbillDs, List<InbillDSn> inbillDSns, List<InbillD> nInbillDs, List<InbillDSn> nInbillDSns);
     }
 }

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WMS.Model;
+using WMS.Model.Entity;
 using WMS.Model.DTO;
 
 namespace WMS.WebApi.Common
@@ -24,6 +24,8 @@ namespace WMS.WebApi.Common
             CreateMap<BaseCargospace, BaseCargospaceDTO>()
                 .ForMember(c => c.WhId, opt => opt.Ignore());
             CreateMap<BasePart, BasePartDTO>();
+            CreateMap<Inbill, InbillDTO>();
+            CreateMap<InbillD, InbillDDTO>();
         }
     }
 }

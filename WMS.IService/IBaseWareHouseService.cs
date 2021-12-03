@@ -10,11 +10,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WMS.Model;
+using WMS.Model.Entity;
 
 namespace WMS.IService
 {
     public interface IBaseWareHouseService : IBaseService<BaseWareHouse>
     {
+        public Task<bool> InvalidWh(BaseWareHouse wh, List<BaseCargospace> csList);
     }
 }

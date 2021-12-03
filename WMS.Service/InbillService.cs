@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WMS.IRepository;
 using WMS.IService;
-using WMS.Model;
+using WMS.Model.Entity;
 using WMS.Model.DTO;
 
 namespace WMS.Service
@@ -24,6 +24,16 @@ namespace WMS.Service
         {
             base._iBaseRepository = iInbillRepository;
             _iInbillRepository = iInbillRepository;
+        }
+
+        public async Task<bool> InBill(Inbill inbill, List<InbillD> inbillDs, List<InbillDSn> inbillDSns)
+        {
+            return await _iInbillRepository.InBill(inbill, inbillDs, inbillDSns);
+        }
+
+        public async Task<bool> EditInBill(Inbill inbill, List<InbillD> inbillDs, List<InbillDSn> inbillDSns, List<InbillD> nInbillDs, List<InbillDSn> nInbillDSns)
+        {
+            return await _iInbillRepository.EditInBill(inbill, inbillDs, inbillDSns, nInbillDs, nInbillDSns);
         }
     }
 }

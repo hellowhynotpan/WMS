@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 using SqlSugar;
 using SqlSugar.IOC;
 using WMS.IRepository;
-using WMS.Model;
+using WMS.Model.Entity;
 
 namespace WMS.Repository
 {

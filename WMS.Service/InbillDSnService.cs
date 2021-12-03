@@ -13,17 +13,17 @@ using System.Threading.Tasks;
 using WMS.IRepository;
 using WMS.IService;
 using WMS.Model.Entity;
+using WMS.Repository;
 
 namespace WMS.Service
 {
-    public class SysUserLogOnService : BaseService<SysUserLogOn>, ISysUserLogOnService
+    public class InbillDSnService : BaseService<InbillDSn>, IInbillDSnService
     {
-        private readonly ISysUserLogOnRepository _iSysUserLogOnRepository;
-
-        public SysUserLogOnService(ISysUserLogOnRepository iSysUserLogOnRepository)
+        private readonly IInbillDSnRespository _ibillDSnRepository;
+        public InbillDSnService(IInbillDSnRespository ibillDSnRepository)
         {
-            base._iBaseRepository = iSysUserLogOnRepository;
-            _iSysUserLogOnRepository = iSysUserLogOnRepository;
+            base._iBaseRepository = ibillDSnRepository;
+            _ibillDSnRepository = ibillDSnRepository;
         }
     }
 }

@@ -12,7 +12,8 @@ using System.Text;
 using System.Threading.Tasks;
 using WMS.IRepository;
 using WMS.IService;
-using WMS.Model;
+using WMS.Model.DTO;
+using WMS.Model.Entity;
 
 namespace WMS.Service
 {
@@ -23,6 +24,11 @@ namespace WMS.Service
         {
             base._iBaseRepository = iInbillDRepository;
             _iInbillDRepository = iInbillDRepository;
+        }
+
+        public async Task<List<InbillDDTO>> QueryInBillDDTO(string inbillMId)
+        {
+            return await _iInbillDRepository.QueryInBillDDTO(inbillMId);
         }
     }
 }

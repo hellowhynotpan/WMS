@@ -11,7 +11,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using WMS.IService;
-using WMS.Model;
+using WMS.Model.Entity;
 using WMS.Model.DTO;
 using WMS.WebApi.Common;
 
@@ -57,10 +57,10 @@ namespace WMS.WebApi.Controllers
             {
                 return ApiResultHelper.Error("物料名称不允许为空");
             }
-            var cs = await _iBasePartService.FindAsync(x => x.PartNo == basePart.PartNo && x.CreateOwner == basePart.CreateOwner);
+            var cs = await _iBasePartService.FindAsync(x => x.PartNo == basePart.PartNo && x.CreateOwner == basePart.CreateOwner&&x.Status==0);
             if (cs != null) return ApiResultHelper.Error("物料编号已存在");
-            cs = await _iBasePartService.FindAsync(x => x.PartName == basePart.PartName && x.CreateOwner == basePart.CreateOwner);
-            if (cs != null) return ApiResultHelper.Error("物料名称已存在");
+            cs = await _iBasePartService.FindAsync(x => x.PartName == basePart.PartName && x.PartSpec == basePart.PartSpec && x.CreateOwner == basePart.CreateOwner && x.Status == 0);
+            if (cs != null) return ApiResultHelper.Error("已存在同名物料名称+规格");
             basePart.CreateTime = DateTime.Now;
             basePart.Status = 0;
             var b = await _iBasePartService.CreateAsync(basePart);
@@ -83,6 +83,8 @@ namespace WMS.WebApi.Controllers
             var baseParteDTO = iMapper.Map<List<BasePartDTO>>(basePart);
             return ApiResultHelper.Success(baseParteDTO);
         }
+
+
         [HttpGet("QueryPage")]
         public async Task<ApiResult> QueryPage([FromQuery] string Func, [FromQuery] int num, [FromQuery] string createOwner)
         {
@@ -93,7 +95,7 @@ namespace WMS.WebApi.Controllers
                 || x.PartNo.ToLower().Contains(Func.Trim().ToLower()));
             }
             func = ExpressionFuncExtender.And<BasePart>(func, x => x.CreateOwner == createOwner);
-            var data = await _iBasePartService.QueryAsync(func, num, x => x.CreateTime);
+            var data = await _iBasePartService.QueryAsync(func, num, x => x.CreateTime );
             return ApiResultHelper.Success(data);
         }
 
@@ -113,6 +115,10 @@ namespace WMS.WebApi.Controllers
             {
                 return ApiResultHelper.Error("物料名称不允许为空");
             }
+            if (string.IsNullOrEmpty(collection["partName"]))
+            {
+                return ApiResultHelper.Error("物料名称不允许为空");
+            }
             basePart.PartName = collection["partName"];
             basePart.PartSpec = collection["partSpec"];
             basePart.PartType = Convert.ToInt32(collection["partType"]);
@@ -122,8 +128,8 @@ namespace WMS.WebApi.Controllers
             basePart.Status = 0;
             var cs = await _iBasePartService.FindAsync(x => x.PartNo == basePart.PartNo && x.CreateOwner == basePart.CreateOwner);
             if (cs != null) return ApiResultHelper.Error("物料编号已存在");
-            cs = await _iBasePartService.FindAsync(x => x.PartName == basePart.PartName && x.CreateOwner == basePart.CreateOwner);
-            if (cs != null) return ApiResultHelper.Error("物料名称已存在");
+            cs = await _iBasePartService.FindAsync(x => x.PartName == basePart.PartName && x.PartSpec == basePart.PartSpec && x.CreateOwner == basePart.CreateOwner);
+            if (cs != null) return ApiResultHelper.Error("已存在同名物料名称+规格");
             FormFileCollection filelist = (FormFileCollection)collection.Files;
             foreach (IFormFile file in filelist)
             {
@@ -147,6 +153,19 @@ namespace WMS.WebApi.Controllers
             var b = await _iBasePartService.CreateAsync(basePart);
             if (b == null) return ApiResultHelper.Error("新增失败");
             return ApiResultHelper.Success("新增成功");
+        }
+
+        [HttpGet("Invalid")]
+        public async Task<ApiResult> Invalid([FromQuery] string id, [FromQuery] string invalidOwner)
+        {
+            var data = await _iBasePartService.FindAsync(x => x.Id == id.Trim());
+            if (data == null) return ApiResultHelper.Error("物料不存在");
+            data.InvalidOwner = invalidOwner;
+            data.InvalidTime = DateTime.Now;
+            data.Status = 1;
+            int num = await _iBasePartService.EditAsync(data);
+            if (num != 1) return ApiResultHelper.Error("作废失败");
+            return ApiResultHelper.Success(data);
         }
     }
 }

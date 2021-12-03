@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WMS.Model
+namespace WMS.Model.Entity
 {
     /// <summary>
     /// 库存
@@ -53,7 +53,7 @@ namespace WMS.Model
         /// <summary>
         /// 创建时间
         /// </summary>
-        [SugarColumn(ColumnName = "create_time", ColumnDescription = "状态", IsNullable = false)]
+        [SugarColumn(ColumnName = "create_time", ColumnDescription = "创建时间", IsNullable = false)]
         public DateTime CreateTime { get; set; }
 
         /// <summary>

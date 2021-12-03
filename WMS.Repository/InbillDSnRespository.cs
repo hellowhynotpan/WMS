@@ -10,12 +10,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WMS.IRepository;
 using WMS.Model.Entity;
 
-namespace WMS.IRepository
+namespace WMS.Repository
 {
-    public interface ISysUserRepository:IBaseRepository<SysUser>
+    public class InbillDSnRespository : BaseRepository<InbillDSn>, IInbillDSnRespository
     {
-        public  Task<bool> Register(SysUser user, SysUserLogOn logOn);
+
     }
 }

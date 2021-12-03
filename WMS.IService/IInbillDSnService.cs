@@ -12,10 +12,10 @@ using System.Text;
 using System.Threading.Tasks;
 using WMS.Model.Entity;
 
-namespace WMS.IRepository
+namespace WMS.IService
 {
-    public interface ISysUserRepository:IBaseRepository<SysUser>
+    public interface IInbillDSnService:IBaseService<InbillDSn>
     {
-        public  Task<bool> Register(SysUser user, SysUserLogOn logOn);
+
     }
 }

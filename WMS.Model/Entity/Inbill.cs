@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WMS.Model
+namespace WMS.Model.Entity
 {
     /// <summary>
     /// 入库单
@@ -61,10 +61,6 @@ namespace WMS.Model
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "状态", IsNullable = false)]
         public int Status { get; set; }
-
-        //入库单明细
-        [SugarColumn(IsIgnore =true)]
-        public List<InbillD> InbillDs { get; set; }
 
         /// <summary>
         /// 创建用户

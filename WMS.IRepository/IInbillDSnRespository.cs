@@ -14,8 +14,8 @@ using WMS.Model.Entity;
 
 namespace WMS.IRepository
 {
-    public interface ISysUserRepository:IBaseRepository<SysUser>
+    public interface IInbillDSnRespository : IBaseRepository<InbillDSn>
     {
-        public  Task<bool> Register(SysUser user, SysUserLogOn logOn);
+
     }
 }

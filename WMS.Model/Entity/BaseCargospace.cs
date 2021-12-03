@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WMS.Model
+namespace WMS.Model.Entity
 {
     /// <summary>
     /// 储位信息

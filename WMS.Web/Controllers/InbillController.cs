@@ -10,9 +10,10 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Utils.Vaild;
 using WMS.IService;
-using WMS.Model;
+using WMS.Model.Entity;
 using WMS.Model.DTO;
 using WMS.WebApi.Common;
+using AutoMapper;
 
 namespace WMS.WebApi.Controllers
 {
@@ -22,52 +23,124 @@ namespace WMS.WebApi.Controllers
     public class InbillController : ControllerBase
     {
         private readonly IInbillService _iInbillService;
-        private readonly IStockMService _iStockMService;
         private readonly IInbillDService _iInbillDService;
-        private readonly IBaseWareHouseService _iBaseWareHouseService;
-        private readonly IBaseCargospaceService _iBaseCargospaceService;
-        private readonly IStockDService _iStockDService;
-        private readonly IBasePartService _iBasePartService;
-        public InbillController(IBaseCargospaceService iBaseCargospaceService, IBaseWareHouseService iBaseWareHouseService,IInbillService iInbillService, IInbillDService iInbillDService, IStockMService iStockMService
-            ,IStockDService iStockDService, IBasePartService iBasePartService)
+        private readonly IInbillDSnService _iInbillDSnService;
+        public InbillController(IInbillService iInbillService, IInbillDService iInbillDService,IInbillDSnService iInbillDSnService)
         {
             _iInbillService = iInbillService;
             _iInbillDService = iInbillDService;
-            _iStockMService = iStockMService;
-            _iBaseWareHouseService = iBaseWareHouseService;
-            _iBaseCargospaceService = iBaseCargospaceService;
-            _iStockDService = iStockDService;
-            _iBasePartService = iBasePartService;
+            _iInbillDSnService= iInbillDSnService;
         }
 
         [HttpGet("GetAll")]
-        public async Task<ApiResult> GetUser()
+        public async Task<ApiResult> GetAll()
         {
             var data = await _iInbillService.QueryAsync();
             return ApiResultHelper.Success(data);
         }
 
-        [HttpGet("FindById")]
-        public async Task<ApiResult> QueryUserById([FromQuery] string id)
+        [HttpGet("QueryInbillById")]
+        public async Task<ApiResult> QueryInbillById([FromServices] IMapper iMapper, [FromQuery] string id)
         {
             var data = await _iInbillService.FindAsync(id);
-            if (data == null) return ApiResultHelper.Error("查询失败");
-            return ApiResultHelper.Success(data);
+            if (data == null) return ApiResultHelper.Error("未找到入库单信息");
+            var inbillDTO = iMapper.Map<InbillDTO>(data);
+            inbillDTO.InbillDs= await _iInbillDService.QueryInBillDDTO(id);
+            return ApiResultHelper.Success(inbillDTO);
         }
 
-        [HttpGet("Edit")]
-        public async Task<ApiResult> EditUser([FromBody] Inbill inbill)
+        [HttpPost("Edit")]
+        public async Task<ApiResult> Edit([FromBody] InbillDTO inbillDTO)
         {
-            var data = await _iInbillService.EditAsync(inbill);
-            if (data != 1) return ApiResultHelper.Error("修改失败");
+            if (inbillDTO.InbillDs.Count == 0) return ApiResultHelper.Error("入库单明细不能为空");
+            foreach (var it in inbillDTO.InbillDs)
+            {
+                if (!Valid.IsPositiveInteger(it.InbillQty.ToString()))
+                {
+                    return ApiResultHelper.Error("入库数量必须为正整数");
+                }
+            }
+            Inbill inbill = await _iInbillService.FindAsync(inbillDTO.Id);
+            inbill.Status = inbillDTO.Status;
+            if (string.IsNullOrEmpty(inbillDTO.InbillNo))
+            {
+                inbill.InbillNo = "Inbill" + DateTime.Now.ToString("yyyyMMddHHmmss");
+            }
+            inbill.LastUpdTIME = DateTime.Now;
+            inbill.LastUpdOwner = inbillDTO.LastUpdOwner;
+            inbill.ErpCode = inbillDTO.ErpCode;
+            inbill.Memo = inbillDTO.Memo;
+            inbill.InbillType = inbillDTO.InbillType;
+            List<InbillD> inbillDs = new List<InbillD>();
+            List<InbillDSn> inbillDSns = new List<InbillDSn>();
+            List<InbillD> nInbillDs= new List<InbillD>();
+            List<InbillDSn> nInbillDSns = new List<InbillDSn>();
+            foreach (var item in inbillDTO.InbillDs)
+            {
+                InbillD inbillD = await _iInbillDService.FindAsync(x => x.Id == item.Id && x.InbillMId == inbillDTO.Id);
+                if (inbillD == null)
+                {
+                    inbillD = new InbillD
+                    {
+                        Id = Guid.NewGuid().ToString("N"),
+                        InbillMId = inbill.Id,
+                        CsId = item.CsId,
+                        InbillQty = item.InbillQty,
+                        PartId = item.PartId,
+                        LineNo = item.LineNo,
+                        ErpCode = inbill.ErpCode,
+                        ErpCodeLine = item.ErpCodeLine,
+                    };
+                    nInbillDs.Add(inbillD);
+                }
+                else
+                {
+                    inbillD.CsId = item.CsId;
+                    inbillD.InbillQty = item.InbillQty;
+                    inbillD.PartId = item.PartId;
+                    inbillD.LineNo = item.LineNo;
+                    inbillD.ErpCode = inbill.ErpCode;
+                    inbillD.ErpCodeLine = item.ErpCodeLine;
+                    inbillDs.Add(inbillD);
+                }
+                InbillDSn inbillDSn = await _iInbillDSnService.FindAsync(x=>x.InbillDId==item.Id&&x.InbillMId== inbillDTO.Id);
+                if (inbillDSn == null)
+                {
+                    inbillDSn = new InbillDSn
+                    {
+                        Id = Guid.NewGuid().ToString("N"),
+                        InbillDId = inbillD.Id,
+                        InbillMId = inbill.Id,
+                        SnNo = item.SnNo,
+                        DateCode = item.DateCode,
+                        PartId = item.PartId,
+                        Quantity = item.InbillQty,
+                        BatchNo = item.BatchNo,
+                        CreateTime = DateTime.Now,
+                        CreateOwner = inbillDTO.CreateOwner
+                    };
+                    nInbillDSns.Add(inbillDSn);
+                }
+                else
+                {
+                    inbillDSn.SnNo = item.SnNo;
+                    inbillDSn.DateCode = item.DateCode;
+                    inbillDSn.PartId = item.PartId;
+                    inbillDSn.Quantity = item.InbillQty;
+                    inbillDSn.BatchNo = item.BatchNo;
+                    inbillDSns.Add(inbillDSn);
+                }
+            }
+            var data = await _iInbillService.EditInBill(inbill, inbillDs, inbillDSns, nInbillDs, nInbillDSns);
+            if (!data) return ApiResultHelper.Error("修改失败");
             return ApiResultHelper.Success("修改成功");
         }
 
         [HttpPost("Create")]
-        public async Task<ApiResult> Create([FromBody] InbillDTO inbillDto)
+        public async Task<ApiResult> Create([FromBody] InbillDTO inbillDTO)
         {
-            if (inbillDto.InbillDs.Count == 0) return ApiResultHelper.Error("入库单明细不能为空");
-            foreach (var it in inbillDto.InbillDs)
+            if (inbillDTO.InbillDs.Count == 0) return ApiResultHelper.Error("入库单明细不能为空");
+            foreach (var it in inbillDTO.InbillDs)
             {
                 if (!Valid.IsPositiveInteger(it.InbillQty.ToString()))
                 {
@@ -75,79 +148,65 @@ namespace WMS.WebApi.Controllers
                 }
             }
             Inbill inbill = new Inbill();
-            inbill.Id=Guid.NewGuid().ToString("N");
+            inbill.Id = Guid.NewGuid().ToString("N");
             inbill.Status = 0;
-            if (string.IsNullOrEmpty(inbillDto.InbillNo))
+            if (string.IsNullOrEmpty(inbillDTO.InbillNo))
             {
                 inbill.InbillNo = "Inbill" + DateTime.Now.ToString("yyyyMMddHHmmss");
             }
             else
-                inbill.InbillNo = inbillDto.InbillNo;
+                inbill.InbillNo = inbillDTO.InbillNo;
             inbill.CreateTime = DateTime.Now;
-            inbill.CreateOwner = inbillDto.CreateOwner;
-            inbill.ErpCode = inbillDto.ErpCode;
-            inbill.Memo = inbillDto.Memo;
-            inbill.InbillType = inbillDto.InbillType;
-            var data = await _iInbillService.CreateAsync(inbill);
-            if (data == null) return ApiResultHelper.Error("新增失败");
-            foreach (var item in inbillDto.InbillDs)
+            inbill.CreateOwner = inbillDTO.CreateOwner;
+            inbill.ErpCode = inbillDTO.ErpCode;
+            inbill.Memo = inbillDTO.Memo;
+            inbill.InbillType = inbillDTO.InbillType;
+            List<InbillD> inbillDs = new List<InbillD>();
+            List<InbillDSn> inbillDSns = new List<InbillDSn>();
+            foreach (var item in inbillDTO.InbillDs)
             {
-                var a = await _iStockMService.FindAsync(x => x.CsId == item.CsId && x.PartId == item.PartId&& x.CreateOwner == inbillDto.CreateOwner);
-                if (a != null)
+                InbillD inbillD = new InbillD
                 {
-                    a.StockQty = a.StockQty + item.InbillQty;
-                    a.LastUpdOwner = inbill.CreateOwner;
-                    a.LastUpdTIME = DateTime.Now;
-                    var b1=  await _iStockMService.EditAsync(a);
-                }
-                else 
+                    Id = Guid.NewGuid().ToString("N"),
+                    InbillMId = inbill.Id,
+                    CsId = item.CsId,
+                    InbillQty = item.InbillQty,
+                    PartId = item.PartId,
+                    LineNo = item.LineNo,
+                    ErpCode = inbill.ErpCode,
+                    ErpCodeLine = item.ErpCodeLine,
+                };
+                inbillDs.Add(inbillD);
+                InbillDSn inbillDSn = new InbillDSn
                 {
-                    StockM stockM = new StockM();
-                    var b1 = await _iBaseCargospaceService.FindAsync(x=>x.Id==item.CsId);
-                    stockM.Id= Guid.NewGuid().ToString("N");
-                    stockM.WhId = b1.WhId;
-                    stockM.CsId = item.CsId;
-                    stockM.PartId = item.PartId;
-                    stockM.CreateOwner = inbill.CreateOwner;
-                    stockM.CreateTime = DateTime.Now;
-                    stockM.StockQty = item.InbillQty;
-                    await _iStockMService.CreateAsync(stockM);
-                }
-                StockD stockD = new StockD();
-                stockD.Id = Guid.NewGuid().ToString("N");
-                stockD.StockMId = a.Id;
-                stockD.SnNo = item.SnNo;
-                stockD.SnType = item.SnType;
-                stockD.SnQty = item.SnQty;
-                stockD.SnDateCode = item.SnDateCode;
-                stockD.BatchNo = item.BatchNo;
-                stockD.PalletNo = item.PalletNo;
-                await _iStockDService.CreateAsync(stockD);
-                InbillD inbillD = new InbillD();
-                inbillD.Id= Guid.NewGuid().ToString("N");
-                inbillD.InbillMId = inbill.Id;
-                inbillD.CsId = item.CsId;
-                inbillD.InbillQty = item.InbillQty;
-                inbillD.PartId = item.PartId;
-                inbillD.LineNo = item.LineNo;
-                inbillD.ErpCode = inbill.ErpCode;
-                await _iInbillDService.CreateAsync(inbillD);
+                    Id = Guid.NewGuid().ToString("N"),
+                    InbillDId = inbillD.Id,
+                    InbillMId = inbill.Id,
+                    SnNo = item.SnNo,
+                    DateCode = item.DateCode,
+                    PartId = item.PartId,
+                    Quantity = item.InbillQty,
+                    BatchNo = item.BatchNo,
+                    CreateTime = DateTime.Now,
+                    CreateOwner = inbillDTO.CreateOwner
+                };
+                inbillDSns.Add(inbillDSn);
             }
-            //库存
+            var data = await _iInbillService.InBill(inbill,inbillDs,inbillDSns);
+            if (!data) return ApiResultHelper.Error("新增失败");
             return ApiResultHelper.Success("新增成功");
         }
 
         [HttpGet("QueryPage")]
         public async Task<ApiResult> QueryPage([FromQuery] string Func, [FromQuery] int num, [FromQuery] string createOwner, [FromQuery] int inbillType, [FromQuery] int status)
         {
-
             Expression<Func<Inbill, bool>> func = u => true;
             if (!string.IsNullOrEmpty(Func))
             {
                 func = ExpressionFuncExtender.And<Inbill>(func, x => x.InbillNo.ToLower().Contains(Func.Trim().ToLower())
                 || x.ErpCode.ToLower().Contains(Func.Trim().ToLower()));
             }
-            if (inbillType!=5)
+            if (inbillType != 5)
             {
                 func = ExpressionFuncExtender.And<Inbill>(func, x => x.InbillType == inbillType);
             }
