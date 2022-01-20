@@ -111,5 +111,10 @@ namespace WMS.Service
         {
             return await _iBaseRepository.QueryAsync(func, num, sortDesc);
         }
+
+        public async Task<List<TEntity>> QueryAsync(List<string> ids)
+        {
+            return await _iBaseRepository.QueryAsync(ids);
+        }
     }
 }

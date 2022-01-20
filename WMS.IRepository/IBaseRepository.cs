@@ -112,7 +112,14 @@ namespace WMS.IRepository
         /// </summary>
         /// <param name="func">表达式</param>
         /// <returns>实体对象集合</returns>
-        Task<List<TEntity>> QueryAsync(Expression<Func<TEntity, bool>> func);
+         Task<List<TEntity>> QueryAsync(Expression<Func<TEntity, bool>> func);
+
+        /// <summary>
+        /// 根据主键集合查询
+        /// </summary>
+        /// <param name="ids">id主键集合</param>
+        /// <returns>实体对象集合</returns>
+        Task<List<TEntity>> QueryAsync(List<string> ids);
 
         /// <summary>
         /// 分页查询
@@ -154,16 +161,16 @@ namespace WMS.IRepository
         /// <param name="page">目标页数</param>
         /// <param name="size">每页大小</param>
         /// <param name="total">页数总计</param>
-        /// <returns></returns>
+        /// <returns>实体对象集合</returns>
         Task<List<TEntity>> QueryAsync(Expression<Func<TEntity, bool>> func, int page, int size, RefAsync<int> total);
 
         /// <summary>
         /// 查询
         /// </summary>
-        /// <param name="func"></param>
-        /// <param name="num"></param>
-        /// <param name="sortDesc"></param>
-        /// <returns></returns>
+        /// <param name="func">查询条件</param>
+        /// <param name="num">数量</param>
+        /// <param name="sortDesc">排序条件</param>
+        /// <returns>实体对象集合</returns>
         Task<List<TEntity>> QueryAsync(Expression<Func<TEntity, bool>> func, int num, Expression<Func<TEntity, object>> sortDesc);
     }
 }

@@ -29,7 +29,6 @@ namespace WMS.WebApi.Controllers
         {
             _iBaseCargospaceService = iBaseCargospaceService;
             _iBaseWareHouseService = iBaseWareHouseService;
-
         }
 
         [HttpGet("GetAll")]

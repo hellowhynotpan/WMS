@@ -30,6 +30,7 @@ namespace WMS.Repository
             }
             catch (Exception ex)
             {
+                Context.Ado.RollbackTran();
                 return false;
             }
         }

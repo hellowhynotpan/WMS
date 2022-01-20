@@ -36,6 +36,11 @@ namespace WMS.Model.DTO
         public string ErpCodeLine { get; set; }
 
         /// <summary>
+        /// 仓库pk
+        /// </summary>
+        public string WhId { get; set; }
+
+        /// <summary>
         /// 物料pk
         /// </summary>
         public string PartId { get; set; }
@@ -66,14 +71,29 @@ namespace WMS.Model.DTO
         public string SnNo { get; set; }
 
         /// <summary>
-        /// date
+        /// SnType
+        /// </summary>
+        public int SnType { get; set; }
+
+        /// <summary>
+        /// 日期
         /// </summary>
         public string DateCode { get; set; }
+
+        /// <summary>
+        /// 条码数量
+        /// </summary>
+        public int SnQty { get; set; }
 
         /// <summary>
         /// 批次号
         /// </summary>
         public string BatchNo { get; set; }
+       
+        /// <summary>
+        /// 栈板号
+        /// </summary>
+        public string PalletNo { get; set; }
 
     }
 }

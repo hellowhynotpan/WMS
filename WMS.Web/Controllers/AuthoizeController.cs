@@ -218,5 +218,15 @@ namespace WMS.WebApi.Controllers
             if(b != 1) return ApiResultHelper.Error("修改失败");
             return ApiResultHelper.Success("修改成功");
         }
+
+        [HttpGet("AutoUpdApk")]
+        public async Task<ApiResult> AutoUpdApk([FromQuery] string version,string os)
+        {
+            if (os == "android"&&version!= base.GetConfiguration.GetSection("APPVersion").Value)
+            {
+                return ApiResultHelper.Success(base.GetConfiguration.GetSection("AppDownloadPath").Value);
+            }
+            return ApiResultHelper.Error("");
+        }
     }
 }

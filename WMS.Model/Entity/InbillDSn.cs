@@ -45,10 +45,16 @@ namespace WMS.Model.Entity
         public string SnNo { get; set; }
 
         // <summary>
-        /// DateCode
+        /// SN类型
         /// </summary>
-        [SugarColumn(ColumnName = "date_code", ColumnDataType = "varchar(500)", ColumnDescription = "DateCode")]
-        public string DateCode { get; set; }
+        [SugarColumn(ColumnName = "sn_type",  ColumnDescription = "SN类型")]
+        public int SnType {get;set;}
+
+        // <summary>
+        /// 生产日期
+        /// </summary>
+        [SugarColumn(ColumnName = "sn_date_code", ColumnDataType = "varchar(500)", ColumnDescription = "DateCode")]
+        public string SnDateCode { get; set; }
 
         // <summary>
         /// 物料pk
@@ -59,14 +65,20 @@ namespace WMS.Model.Entity
         // <summary>
         /// 数量
         /// </summary>
-        [SugarColumn(ColumnName = "quantity",  ColumnDescription = "数量")]
-        public int Quantity { get; set; }
+        [SugarColumn(ColumnName = "sn_qty",  ColumnDescription = "数量")]
+        public int SnQty { get; set; }
 
         // <summary>
         /// 批次号
         /// </summary>
-        [SugarColumn(ColumnName = "batch_no", ColumnDataType = "varchar(100)", ColumnDescription = "批次号", IsNullable = false)]
+        [SugarColumn(ColumnName = "batch_no", ColumnDataType = "varchar(100)", ColumnDescription = "批次号", IsNullable = true)]
         public string BatchNo { get; set; }
+
+        // <summary>
+        /// 栈板号
+        /// </summary>
+        [SugarColumn(ColumnName = "pallet_no", ColumnDataType = "varchar(100)", ColumnDescription = "栈板号", IsNullable = true)]
+        public string PalletNo { get; set; }
 
         /// <summary>
         /// 创建时间

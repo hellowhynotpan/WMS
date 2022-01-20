@@ -66,6 +66,10 @@ namespace WMS.WebApi.Controllers
             {
                 inbill.InbillNo = "Inbill" + DateTime.Now.ToString("yyyyMMddHHmmss");
             }
+            else
+            {
+                inbill.InbillNo = inbillDTO.InbillNo;
+            }
             inbill.LastUpdTIME = DateTime.Now;
             inbill.LastUpdOwner = inbillDTO.LastUpdOwner;
             inbill.ErpCode = inbillDTO.ErpCode;
@@ -112,9 +116,10 @@ namespace WMS.WebApi.Controllers
                         InbillDId = inbillD.Id,
                         InbillMId = inbill.Id,
                         SnNo = item.SnNo,
-                        DateCode = item.DateCode,
+                        SnDateCode = item.DateCode,
                         PartId = item.PartId,
-                        Quantity = item.InbillQty,
+                        SnQty = item.SnQty,
+                        PalletNo = item.PalletNo,
                         BatchNo = item.BatchNo,
                         CreateTime = DateTime.Now,
                         CreateOwner = inbillDTO.CreateOwner
@@ -124,9 +129,9 @@ namespace WMS.WebApi.Controllers
                 else
                 {
                     inbillDSn.SnNo = item.SnNo;
-                    inbillDSn.DateCode = item.DateCode;
+                    inbillDSn.SnDateCode = item.DateCode;
                     inbillDSn.PartId = item.PartId;
-                    inbillDSn.Quantity = item.InbillQty;
+                    inbillDSn.SnQty = item.SnQty;
                     inbillDSn.BatchNo = item.BatchNo;
                     inbillDSns.Add(inbillDSn);
                 }
@@ -183,9 +188,10 @@ namespace WMS.WebApi.Controllers
                     InbillDId = inbillD.Id,
                     InbillMId = inbill.Id,
                     SnNo = item.SnNo,
-                    DateCode = item.DateCode,
+                    SnDateCode = item.DateCode,
                     PartId = item.PartId,
-                    Quantity = item.InbillQty,
+                    PalletNo= item.PalletNo,
+                    SnQty = item.SnQty,
                     BatchNo = item.BatchNo,
                     CreateTime = DateTime.Now,
                     CreateOwner = inbillDTO.CreateOwner

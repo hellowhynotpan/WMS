@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SqlSugar;
 using System;
@@ -11,6 +12,7 @@ using System.Linq.Expressions;
 using MS.WebApi.Common;
 using WMS.Model.DTO;
 using WMS.Model.Entity;
+using AutoMapper;
 
 namespace WMS.WebApi.Controllers
 {
@@ -19,10 +21,22 @@ namespace WMS.WebApi.Controllers
     public class StockMController : ControllerBase
     {
         private readonly IStockMService _iStockMService;
+        private readonly IInbillService _iInbillService;
+        private readonly IInbillDService _iInbillDService;
+        private readonly IInbillDSnService _iInbillDSnService;
+        private readonly IBasePartService _iBasePartService;
+        private readonly IBaseCargospaceService _iBaseCargospaceService;
+        private readonly IStockDService _iStockDService;
 
-        public StockMController(IStockMService iStockMService)
+        public StockMController(IStockDService iStockDService,IBasePartService iBasePartService,IBaseCargospaceService iBaseCargospaceService,IStockMService iStockMService, IInbillService iInbillService, IInbillDService iInbillDService, IInbillDSnService iInbillDSnService)
         {
             _iStockMService = iStockMService;
+            _iInbillService = iInbillService;
+            _iInbillDService = iInbillDService;
+            _iBaseCargospaceService = iBaseCargospaceService;
+            _iInbillDSnService = iInbillDSnService;
+            _iBasePartService = iBasePartService;
+            _iStockDService = iStockDService;
         }
 
         [HttpGet("GetAll")]
@@ -32,11 +46,10 @@ namespace WMS.WebApi.Controllers
             return ApiResultHelper.Success(data);
         }
 
-        [HttpGet("FindById")]
-        public async Task<ApiResult> QueryUserById([FromQuery] string id)
+        [HttpGet("QuertStockMById")]
+        public async Task<ApiResult> FindById([FromQuery] string id)
         {
-            var data = await _iStockMService.FindAsync(id);
-            if (data == null) return ApiResultHelper.Error("查询失败");
+            var data = await _iStockDService.QueryAsync(x=>x.StockMId==id);
             return ApiResultHelper.Success(data);
         }
 
@@ -48,12 +61,71 @@ namespace WMS.WebApi.Controllers
             return ApiResultHelper.Success("修改成功");
         }
 
-        [HttpGet("Create")]
-        public async Task<ApiResult> CreateUser([FromBody]StockM stockM)
+        /// <summary>
+        /// 扣账接口
+        /// </summary>
+        /// <param name="iMapper"></param>
+        /// <param name="apiRequest"></param>
+        /// <returns></returns>
+        [HttpPost("Examine")]
+        public async Task<ApiResult> Examine([FromServices] IMapper iMapper ,[FromBody] ApiRequest<string> apiRequest)
         {
-            var data = await _iStockMService.CreateAsync(stockM);
-            if (data == null) return ApiResultHelper.Error("新增失败");
-            return ApiResultHelper.Success("新增成功");
+            var data = await _iInbillService.FindAsync(apiRequest.Data);
+            if (data == null) return ApiResultHelper.Error("未找到入库单信息");
+            if (data.Status != 0) return ApiResultHelper.Error("入库单状态不正确");
+            var inbillsDTO = iMapper.Map<InbillDTO>(data);
+            var inbillDs = await _iInbillDService.QueryAsync(x => x.InbillMId == data.Id);
+            foreach (var item in inbillDs)
+            {
+                var c = await _iBaseCargospaceService.FindAsync(item.CsId);
+                if (c.Status != 0) return ApiResultHelper.Error("明细中有储位状态异常，无法扣账");
+                var p = await _iBasePartService.FindAsync(item.PartId);
+                if (c.Status != 0) return ApiResultHelper.Error("明细中有物料状态异常，无法扣账");
+            }
+            inbillsDTO.InbillDs = await _iInbillDService.QueryInBillDDTO(inbillsDTO.Id);
+            foreach (var item in inbillsDTO.InbillDs)
+            {
+                var stockM = await _iStockMService.FindAsync(x => x.WhId == item.WhId && x.CsId == item.CsId && x.PartId == item.PartId);
+                bool flag = false;
+                if (stockM == null)
+                {
+                    stockM = new StockM();
+                    stockM.Id = Guid.NewGuid().ToString("N");
+                    stockM.CsId = item.CsId;
+                    stockM.WhId = item.WhId;
+                    stockM.PartId = item.PartId;
+                    stockM.StockQty = item.InbillQty;
+                    stockM.CreateTime = DateTime.Now;
+                    stockM.CreateOwner = apiRequest.User;
+                }
+                else
+                {
+                    stockM.LastUpdOwner = apiRequest.User;
+                    stockM.LastUpdTIME = DateTime.Now;
+                    stockM.StockQty += item.InbillQty;
+                    flag = true;
+                }
+                var stockD = new StockD
+                {
+                    Id = Guid.NewGuid().ToString("N"),
+                    StockMId = stockM.Id,
+                    SnNo = item.SnNo,
+                    SnType = item.SnType,
+                    DateCode = item.DateCode,
+                    BatchNo = item.BatchNo,
+                    PalletNo = item.PalletNo,
+                    SnQty = item.SnQty,
+                };
+                if (flag)
+                    await _iStockMService.UpdStockM(stockM, stockD);
+                else
+                    await _iStockMService.AddStockM(stockM, stockD);
+                data.Status = 2;
+                data.LastUpdOwner = apiRequest.User;
+                data.LastUpdTIME = DateTime.Now;
+                await _iInbillService.EditAsync(data);
+            }
+            return ApiResultHelper.Success(true);
         }
 
         [HttpGet("QueryPage")]

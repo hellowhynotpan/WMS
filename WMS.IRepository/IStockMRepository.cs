@@ -18,5 +18,21 @@ namespace WMS.IRepository
     public interface  IStockMRepository : IBaseRepository<StockM>
     {
         public Task<List<StockDTO>> QueryStock(string createOwner);
+
+        /// <summary>
+        /// 扣账事务 新增库存
+        /// </summary>
+        /// <param name="stockM"></param>
+        /// <param name="stockD"></param>
+        /// <returns></returns>
+        public Task<bool> AddStockM(StockM stockM, StockD stockD);
+
+        /// <summary>
+        /// 扣账事务 更新库存
+        /// </summary>
+        /// <param name="stockM"></param>
+        /// <param name="stockD"></param>
+        /// <returns></returns>
+        public Task<bool> UpdStockM(StockM stockM, StockD stockD);
     }
 }

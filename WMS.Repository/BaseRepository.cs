@@ -100,6 +100,11 @@ namespace WMS.Repository
             return await Context.Queryable<TEntity>().ToListAsync();
         }
 
+        public async Task<List<TEntity>> QueryAsync(List<string> ids)
+        {
+            return await Context.Queryable<TEntity>().In(ids).ToListAsync();
+        }
+
         public async Task<List<TEntity>> QueryAsync(Expression<Func<TEntity, bool>> func)
         {
             return await Context.Queryable<TEntity>().Where(func).ToListAsync();
@@ -147,5 +152,7 @@ namespace WMS.Repository
         {
             return await Context.Queryable<TEntity>().Where(func).FirstAsync();
         }
+
+
     }
 }

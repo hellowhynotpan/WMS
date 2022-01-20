@@ -99,6 +99,12 @@ namespace WMS.IService
         /// <returns>实体对象集合</returns>
         Task<List<TEntity>> QueryAsync(Expression<Func<TEntity, bool>> func);
 
+        /// <summary>
+        /// 根据主键集合查询
+        /// </summary>
+        /// <param name="ids">主键集合</param>
+        /// <returns>实体对象集合</returns>
+        Task<List<TEntity>> QueryAsync(List<string> ids);
 
         /// <summary>
         /// 分页查询

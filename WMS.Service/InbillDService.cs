@@ -30,5 +30,11 @@ namespace WMS.Service
         {
             return await _iInbillDRepository.QueryInBillDDTO(inbillMId);
         }
+
+        public async Task<List<InbillDDTO>> QueryInBillDDTO(List<string> inbillMIds)
+        {
+            return await _iInbillDRepository.QueryInBillDDTO(inbillMIds);
+        }
+
     }
 }

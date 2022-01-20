@@ -52,8 +52,8 @@ namespace WMS.Model.Entity
         // <summary>
         /// 生产日期
         /// </summary>
-        [SugarColumn(ColumnName = "sn_date_code",  ColumnDescription = "生产日期", IsNullable = false)]//数据库是自增才配自增 
-        public DateTime SnDateCode { get; set; }
+        [SugarColumn(ColumnName = "date_code",  ColumnDescription = "生产日期", IsNullable = false)]//数据库是自增才配自增 
+        public string DateCode { get; set; }
 
         // <summary>
         /// 批次号

@@ -18,5 +18,8 @@ namespace WMS.IService
     public interface IInbillDService : IBaseService<InbillD>
     {
         public Task<List<InbillDDTO>> QueryInBillDDTO(string inbillMId);
+
+        public Task<List<InbillDDTO>> QueryInBillDDTO(List<string> inbillMIds);
+
     }
 }

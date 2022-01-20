@@ -18,5 +18,9 @@ namespace WMS.IService
     public interface IStockMService : IBaseService<StockM>
     {
         public Task<List<StockDTO>> QueryStock(string createOwner);
+
+        public Task<bool> AddStockM(StockM stockM, StockD stockD);
+
+        public Task<bool> UpdStockM(StockM stockM, StockD stockD);
     }
 }

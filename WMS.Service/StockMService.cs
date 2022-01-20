@@ -26,9 +26,19 @@ namespace WMS.Service
             _iStockMRepository = iStockMRepository;
         }
 
+        public async Task<bool> AddStockM(StockM stockM, StockD stockD)
+        {
+            return await _iStockMRepository.AddStockM(stockM, stockD);
+        }
+
         public async Task<List<StockDTO>> QueryStock(string createOwner)
         {
             return await _iStockMRepository.QueryStock(createOwner);
+        }
+
+        public async Task<bool> UpdStockM(StockM stockM, StockD stockD)
+        {
+            return await _iStockMRepository.UpdStockM(stockM, stockD);
         }
     }
 }

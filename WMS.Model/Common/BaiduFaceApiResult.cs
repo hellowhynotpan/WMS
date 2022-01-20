@@ -27,7 +27,7 @@ namespace WMS.Model
         public string group_id;
         public string user_id;
         public string user_info;
-        public float score;
+        public float  score;
     }
 
 }

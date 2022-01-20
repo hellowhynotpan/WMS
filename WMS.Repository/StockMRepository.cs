@@ -40,7 +40,41 @@ namespace WMS.Repository
                 CsNo = cs.CsNo,
                 CsName = cs.CsName
             })
-            .ToListAsync();  //ViewOrder是一个新建的类，更多Select用法看下面文档
+            .ToListAsync();
+        }
+
+        public async Task<bool> AddStockM(StockM stockM,StockD stockD)
+        {
+            try
+            {
+                Context.Ado.BeginTran();
+                await Context.Insertable(stockM).ExecuteCommandAsync();
+                await Context.Insertable(stockD).ExecuteCommandAsync();
+                Context.Ado.CommitTran();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Context.Ado.RollbackTran();
+                throw ex;
+            }
+        }
+
+        public async Task<bool> UpdStockM(StockM stockM,StockD stockD)
+        {
+            try
+            {
+                Context.Ado.BeginTran();
+                await Context.Updateable(stockM).ExecuteCommandAsync();
+                await Context.Insertable(stockD).ExecuteCommandAsync();
+                Context.Ado.CommitTran();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Context.Ado.RollbackTran();
+                throw ex;
+            }
         }
     }
 }
