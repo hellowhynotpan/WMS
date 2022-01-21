@@ -52,7 +52,8 @@ namespace WMS.WebApi.Controllers
         [HttpPost("Edit")]
         public async Task<ApiResult> Edit([FromBody] InbillDTO inbillDTO)
         {
-            if (inbillDTO.InbillDs.Count == 0) return ApiResultHelper.Error("入库单明细不能为空");
+            if (inbillDTO.Status != 0) return ApiResultHelper.Error("不允许修改！");
+            if (inbillDTO.InbillDs.Count == 0) return ApiResultHelper.Error("入库单明细不能为空！");
             foreach (var it in inbillDTO.InbillDs)
             {
                 if (!Valid.IsPositiveInteger(it.InbillQty.ToString()))
@@ -94,6 +95,7 @@ namespace WMS.WebApi.Controllers
                         LineNo = item.LineNo,
                         ErpCode = inbill.ErpCode,
                         ErpCodeLine = item.ErpCodeLine,
+                        
                     };
                     nInbillDs.Add(inbillD);
                 }
@@ -117,6 +119,7 @@ namespace WMS.WebApi.Controllers
                         InbillMId = inbill.Id,
                         SnNo = item.SnNo,
                         SnDateCode = item.DateCode,
+                        SnType= item.SnType,
                         PartId = item.PartId,
                         SnQty = item.SnQty,
                         PalletNo = item.PalletNo,
@@ -133,6 +136,7 @@ namespace WMS.WebApi.Controllers
                     inbillDSn.PartId = item.PartId;
                     inbillDSn.SnQty = item.SnQty;
                     inbillDSn.BatchNo = item.BatchNo;
+                    inbillDSn.SnType = item.SnType;
                     inbillDSns.Add(inbillDSn);
                 }
             }
@@ -192,6 +196,7 @@ namespace WMS.WebApi.Controllers
                     PartId = item.PartId,
                     PalletNo= item.PalletNo,
                     SnQty = item.SnQty,
+                    SnType=item.SnType,
                     BatchNo = item.BatchNo,
                     CreateTime = DateTime.Now,
                     CreateOwner = inbillDTO.CreateOwner

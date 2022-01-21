@@ -47,9 +47,15 @@ namespace WMS.WebApi.Controllers
         }
 
         [HttpGet("QuertStockMById")]
-        public async Task<ApiResult> FindById([FromQuery] string id)
+        public async Task<ApiResult> FindById([FromQuery] string id, [FromQuery] string func)
         {
-            var data = await _iStockDService.QueryAsync(x=>x.StockMId==id);
+            Expression<Func<StockD, bool>> funcStock = u => true;
+            funcStock = ExpressionFuncExtender.And<StockD>(funcStock, x =>x.StockMId == id);
+            if (!string.IsNullOrEmpty(func))
+            {
+                funcStock = ExpressionFuncExtender.And<StockD>(funcStock, x=> x.SnNo.ToLower().Contains(func.ToLower())||x.PalletNo.ToLower().Contains(func.ToLower()) || x.BatchNo.ToLower().Contains(func.ToLower()));
+            }
+            var data = await _iStockDService.QueryAsync(funcStock);
             return ApiResultHelper.Success(data);
         }
 
